@@ -1,12 +1,6 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { User } from "../models/user.model.ts";
 
-interface decodedTokenProps {
-  userId: string;
-  iat: number;
-  exp: number;
-}
-
 export const protectedRoute = async (req, res, next) => {
   try {
     const token = req.cookies.jwt;

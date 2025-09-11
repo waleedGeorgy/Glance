@@ -18,47 +18,54 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: true,
-      minLength: 6
+      minLength: 6,
     },
     email: {
-        type: String,
-        required: true,
-        unique: true
+      type: String,
+      required: true,
+      unique: true,
     },
     followers: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: []
-        }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
     ],
     following: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "User",
-            default: []
-        }
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        default: [],
+      },
     ],
     profileImage: {
       type: String,
       required: false,
-      default: ""
+      default: "",
     },
     coverImage: {
-        type: String,
-        required: false,
-        default: ""
+      type: String,
+      required: false,
+      default: "",
     },
     bio: {
-        type: String,
-        required: false,
-        default: ""
+      type: String,
+      required: false,
+      default: "",
     },
     link: {
-        type: String,
-        required: false,
-        default: ""
-    }
+      type: String,
+      required: false,
+      default: "",
+    },
+    likedPosts: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Post",
+        default: [],
+      },
+    ],
   },
   { timestamps: true }
 );
