@@ -1,2 +1,15 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&display=swap");
 @import "tailwindcss";
-@plugin "daisyui";
+@plugin "daisyui" {
+  themes: black --default;
+}
+@plugin "daisyui/theme" {
+  name: "black";
+  default: true;
+  --color-primary: #D45F40;
+  --color-secondary: rgb(24, 24, 24);
+  --color-accent: rgba(34, 34, 34);
+}
+@theme {
+  --font-roboto: "Roboto", sans-serif;
+}
