@@ -24,10 +24,10 @@ const LoginPage = () => {
             <div className='flex-1 hidden lg:flex items-center justify-center'>
                 <h1 className="text-6xl">Glance</h1>
             </div>
-            <div className='flex-1 flex flex-col justify-center items-center'>
+            <div className='flex-1 flex flex-col justify-center items-center gap-5'>
+                <h2 className="lg:hidden">Glance</h2>
+                <h3 className='text-3xl text-center'>Let's Continue!</h3>
                 <form className='flex gap-4 flex-col w-2/3' onSubmit={handleLogin}>
-                    <h2 className="w-24 lg:hidden">Glance</h2>
-                    <h3 className='text-3xl text-center'>Let's Continue!</h3>
                     <label className='input rounded-lg w-full'>
                         <User2 className="size-5 opacity-50" />
                         <input
@@ -56,10 +56,10 @@ const LoginPage = () => {
                     <button className='btn rounded-full btn-primary'>Sign Up</button>
                     {isError && <p className='text-red-400 text-right'>Something went wrong</p>}
                 </form>
-                <div className='flex flex-col gap-2 mt-6'>
-                    <p className='text-center'>Already have an account?</p>
+                <div className='flex flex-col gap-2'>
+                    <p className='text-center'>Don't have an account?</p>
                     <Link viewTransition to='/signup'>
-                        <button className='btn rounded-full btn-primary btn-outline w-full'>Log In</button>
+                        <button className='btn rounded-full btn-primary btn-outline w-full'>Sign Up</button>
                     </Link>
                 </div>
             </div>

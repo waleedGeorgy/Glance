@@ -29,7 +29,7 @@ const SignupPage = () => {
             </div>
             <div className='flex-1 flex flex-col justify-center items-center'>
                 <form className='flex gap-4 flex-col' onSubmit={handleSignup}>
-                    <h2 className="w-24 lg:hidden">Glance</h2>
+                    <h2 className="lg:hidden">Glance</h2>
                     <h3 className='text-3xl text-center'>Join for free!</h3>
                     <label className='input rounded-lg w-full'>
                         <Mail className="size-5 opacity-50" />

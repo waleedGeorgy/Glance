@@ -6,7 +6,7 @@
 @plugin "daisyui/theme" {
   name: "black";
   default: true;
-  --color-primary: #D45F40;
+  --color-primary: #d4512f;
   --color-secondary: rgb(24, 24, 24);
   --color-accent: rgba(34, 34, 34);
 }

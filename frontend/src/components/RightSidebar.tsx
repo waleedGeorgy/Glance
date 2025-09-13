@@ -6,7 +6,7 @@ const RightSidebar = () => {
     const isLoading = false;
 
     return (
-        <div className='hidden lg:block m-2'>
+        <div className='hidden lg:block ml-2'>
             <div className='bg-secondary px-4 py-3 rounded-md sticky top-2'>
                 <p className='mb-3 font-semibold'>Suggested users</p>
                 <div className='flex justify-center flex-col gap-4'>

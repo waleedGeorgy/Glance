@@ -35,7 +35,8 @@ function App() {
       path: "/login",
       element: <LoginPage />,
     },
-  ])
+  ]);
+
   return (
     <RouterProvider router={router} />
   )

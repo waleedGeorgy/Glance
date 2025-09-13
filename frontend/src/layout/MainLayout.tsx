@@ -1,11 +1,11 @@
 import { Outlet } from "react-router"
-import Sidebar from "../components/LeftSidebar"
+import LeftSidebar from "../components/LeftSidebar"
 import RightSidebar from "../components/RightSidebar"
 
 const MainLayout = () => {
     return (
         <main className="flex max-w-6xl mx-auto font-roboto">
-            <Sidebar />
+            <LeftSidebar />
             <Outlet />
             <RightSidebar />
         </main>

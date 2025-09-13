@@ -1,18 +1,18 @@
 import { useRef, useState } from "react";
-import ProfileHeaderSkeleton from "../components/skeletons/ProfileHeaderSkeleton";
 import { Link } from "react-router";
-import { ArrowLeft, Edit, Link2, Calendar1 } from "lucide-react"
-import { POSTS } from "../data/dummy";
+import { ArrowLeft, Edit, Link2, Calendar1, Camera } from "lucide-react"
+import ProfileHeaderSkeleton from "../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "../components/EditProfileModal";
 import Posts from "../components/Posts";
+import { POSTS } from "../data/dummy";
 
 const ProfilePage = () => {
-    const [coverImg, setCoverImg] = useState(null);
-    const [profileImg, setProfileImg] = useState(null);
+    const [coverImg, setCoverImg] = useState<string | null>(null);
+    const [profileImg, setProfileImg] = useState<string | null>(null);
     const [feedType, setFeedType] = useState("posts");
 
-    const coverImgRef = useRef(null);
-    const profileImgRef = useRef(null);
+    const coverImgRef = useRef<HTMLInputElement>(null);
+    const profileImgRef = useRef<HTMLInputElement>(null);
 
     const isLoading = false;
     const isMyProfile = true;
@@ -22,20 +22,20 @@ const ProfilePage = () => {
         fullName: "John Doe",
         username: "johndoe",
         profileImg: "/avatars/boy2.png",
-        coverImg: "/cover.png",
+        coverImg: "/no_image.jpg",
         bio: "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
-        link: "https://youtube.com/@asaprogrammer_",
+        link: "https://youtube.com/@asaprogrammer",
         following: ["1", "2", "3"],
         followers: ["1", "2", "3"],
     };
 
-    const handleImgChange = (e, state) => {
-        const file = e.target.files[0];
+    const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>, state: string) => {
+        const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                state === "coverImg" && setCoverImg(reader.result);
-                state === "profileImg" && setProfileImg(reader.result);
+                if (state === "coverImg") setCoverImg(reader.result as string);
+                if (state === "profileImg") setProfileImg(reader.result as string);
             };
             reader.readAsDataURL(file);
         }
@@ -43,38 +43,39 @@ const ProfilePage = () => {
 
     return (
         <>
-            <div className='flex-[4_4_0]  border-r border-gray-700 min-h-screen '>
-                {/* HEADER */}
+            <div className='flex-[4_4_0] border-r border-accent min-h-screen'>
                 {isLoading && <ProfileHeaderSkeleton />}
                 {!isLoading && !user && <p className='text-center text-lg mt-4'>User not found</p>}
                 <div className='flex flex-col'>
                     {!isLoading && user && (
                         <>
-                            <div className='flex gap-10 px-4 py-2 items-center'>
+                            {/* Header */}
+                            <div className='flex gap-6 px-4 py-2 items-center'>
                                 <Link viewTransition to='/'>
-                                    <ArrowLeft className='w-4 h-4' />
+                                    <ArrowLeft className='size-4' />
                                 </Link>
-                                <div className='flex flex-col'>
-                                    <p className='font-bold text-lg'>{user?.fullName}</p>
-                                    <span className='text-sm text-slate-500'>{POSTS?.length} posts</span>
+                                <div className='flex flex-col justify-center'>
+                                    <p className='font-semibold text-lg'>{user?.fullName}</p>
+                                    <span className='text-sm opacity-50'>{POSTS?.length} posts</span>
                                 </div>
                             </div>
-                            {/* COVER IMG */}
-                            <div className='relative group/cover'>
-                                <img
-                                    src={coverImg || user?.coverImg || "/cover.png"}
-                                    className='h-52 w-full object-cover'
-                                    alt='cover image'
-                                />
-                                {isMyProfile && (
-                                    <div
-                                        className='absolute top-2 right-2 rounded-full p-2 bg-gray-800 bg-opacity-75 cursor-pointer opacity-0 group-hover/cover:opacity-100 transition duration-200'
-                                        onClick={() => coverImgRef.current.click()}
-                                    >
-                                        <Edit className='w-5 h-5 text-white' />
-                                    </div>
-                                )}
-
+                            {/* Profile and cover images */}
+                            <div className='relative'>
+                                <div className="group">
+                                    <img
+                                        src={coverImg || user?.coverImg || "/no_image.jpg"}
+                                        className='h-56 w-full object-cover'
+                                        alt='cover image'
+                                    />
+                                    {isMyProfile && (
+                                        <div
+                                            className='absolute top-2 right-2 rounded-full p-2 bg-secondary bg-opacity-75 cursor-pointer opacity-0 group-hover:opacity-100 hover:scale-105'
+                                            onClick={() => coverImgRef.current?.click()}
+                                        >
+                                            <Edit className='size-5' />
+                                        </div>
+                                    )}
+                                </div>
                                 <input
                                     type='file'
                                     hidden
@@ -87,26 +88,26 @@ const ProfilePage = () => {
                                     ref={profileImgRef}
                                     onChange={(e) => handleImgChange(e, "profileImg")}
                                 />
-                                {/* USER AVATAR */}
-                                <div className='avatar absolute -bottom-16 left-4'>
-                                    <div className='w-32 rounded-full relative group/avatar'>
+                                <div className='avatar absolute -bottom-16 left-5 group'>
+                                    <div className='size-32 rounded-full relative'>
                                         <img src={profileImg || user?.profileImg || "/avatar-placeholder.png"} />
-                                        <div className='absolute top-5 right-3 p-1 bg-primary rounded-full group-hover/avatar:opacity-100 opacity-0 cursor-pointer'>
+                                        <div className='absolute top-5 right-4 p-1 bg-secondary rounded-full group-hover:opacity-100 opacity-0 hover:scale-105 cursor-pointer'>
                                             {isMyProfile && (
-                                                <Edit
-                                                    className='w-4 h-4 text-white'
-                                                    onClick={() => profileImgRef.current.click()}
+                                                <Camera
+                                                    className='size-4'
+                                                    onClick={() => profileImgRef.current?.click()}
                                                 />
                                             )}
                                         </div>
                                     </div>
                                 </div>
                             </div>
+                            {/* Edit and follow buttons */}
                             <div className='flex justify-end px-4 mt-5'>
                                 {isMyProfile && <EditProfileModal />}
                                 {!isMyProfile && (
                                     <button
-                                        className='btn btn-outline rounded-full btn-sm'
+                                        className='btn btn-primary rounded-full'
                                         onClick={() => alert("Followed successfully")}
                                     >
                                         Follow
@@ -114,54 +115,54 @@ const ProfilePage = () => {
                                 )}
                                 {(coverImg || profileImg) && (
                                     <button
-                                        className='btn btn-primary rounded-full btn-sm text-white px-4 ml-2'
+                                        className='btn btn-primary rounded-full btn-sm ml-2'
                                         onClick={() => alert("Profile updated successfully")}
                                     >
                                         Update
                                     </button>
                                 )}
                             </div>
-
-                            <div className='flex flex-col gap-4 mt-14 px-4'>
-                                <div className='flex flex-col'>
+                            {/* Profile info */}
+                            <div className='flex flex-col justify-center gap-4 mt-6 px-4'>
+                                <div className='flex flex-col gap-1 justify-center'>
                                     <span className='font-bold text-lg'>{user?.fullName}</span>
-                                    <span className='text-sm text-slate-500'>@{user?.username}</span>
+                                    <span className='text-sm text-primary'>@{user?.username}</span>
                                     <span className='text-sm my-1'>{user?.bio}</span>
-                                </div>
-
-                                <div className='flex gap-2 flex-wrap'>
-                                    {user?.link && (
-                                        <div className='flex gap-1 items-center '>
-                                            <>
-                                                <Link2 className='w-3 h-3 text-slate-500' />
-                                                <a
-                                                    href='https://youtube.com/@asaprogrammer_'
-                                                    target='_blank'
-                                                    rel='noreferrer'
-                                                    className='text-sm text-blue-500 hover:underline'
-                                                >
-                                                    youtube.com/@asaprogrammer_
-                                                </a>
-                                            </>
+                                    <div className="flex flex-row gap-4 items-center">
+                                        {user?.link && (
+                                            <div className='flex gap-2 items-center '>
+                                                <>
+                                                    <Link2 className="size-4" />
+                                                    <a
+                                                        href='https://youtube.com/@asaprogrammer_'
+                                                        target='_blank'
+                                                        rel='noreferrer'
+                                                        className='text-sm text-blue-400 hover:underline underline-offset-2'
+                                                    >
+                                                        youtube.com/@asaprogrammer_
+                                                    </a>
+                                                </>
+                                            </div>
+                                        )}
+                                        <div className='flex gap-1 items-center'>
+                                            <Calendar1 className='size-4 opacity-50' />
+                                            <span className='text-sm opacity-50'>Joined July 2021</span>
                                         </div>
-                                    )}
-                                    <div className='flex gap-2 items-center'>
-                                        <Calendar1 className='w-4 h-4 text-slate-500' />
-                                        <span className='text-sm text-slate-500'>Joined July 2021</span>
                                     </div>
                                 </div>
-                                <div className='flex gap-2'>
-                                    <div className='flex gap-1 items-center'>
-                                        <span className='font-bold text-xs'>{user?.following.length}</span>
-                                        <span className='text-slate-500 text-xs'>Following</span>
+                                <div className='flex items-center gap-3'>
+                                    <div className='flex gap-1 items-center bg-emerald-500 px-3 py-1 rounded-2xl text-secondary'>
+                                        <span className='font-bold text-sm'>{user?.following.length}</span>
+                                        <span className='text-sm'>Following</span>
                                     </div>
-                                    <div className='flex gap-1 items-center'>
-                                        <span className='font-bold text-xs'>{user?.followers.length}</span>
-                                        <span className='text-slate-500 text-xs'>Followers</span>
+                                    <div className='flex gap-1 items-center bg-indigo-500 px-3 py-1 rounded-2xl text-secondary'>
+                                        <span className='font-bold text-sm'>{user?.followers.length}</span>
+                                        <span className='text-sm'>Followers</span>
                                     </div>
                                 </div>
                             </div>
-                            <div className='flex w-full border-b border-gray-700 mt-4'>
+                            {/* Posts and likes bar */}
+                            <div className='flex w-full border-b border-accent mt-5'>
                                 <div
                                     className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer'
                                     onClick={() => setFeedType("posts")}
@@ -172,12 +173,12 @@ const ProfilePage = () => {
                                     )}
                                 </div>
                                 <div
-                                    className='flex justify-center flex-1 p-3 text-slate-500 hover:bg-secondary transition duration-300 relative cursor-pointer'
+                                    className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer'
                                     onClick={() => setFeedType("likes")}
                                 >
                                     Likes
                                     {feedType === "likes" && (
-                                        <div className='absolute bottom-0 w-10  h-1 rounded-full bg-primary' />
+                                        <div className='absolute bottom-0 w-10 h-1 rounded-full bg-primary' />
                                     )}
                                 </div>
                             </div>

@@ -1,10 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { Link } from "react-router";
-import { Trash2, Heart, Repeat, MessageCircle } from "lucide-react"
+import { Trash2, Heart, Repeat, MessageCircle, Clock2 } from "lucide-react"
+import type { Comment, Post } from "../types";
 
-const Post = ({ post }) => {
+const Post = ({ post }: { post: Post }) => {
     const [comment, setComment] = useState("");
-    console.log(post)
+
     const postOwner = post.user;
     const isLiked = false;
 
@@ -24,41 +25,44 @@ const Post = ({ post }) => {
 
     return (
         <>
-            <div className='flex gap-3 p-3 border-b-4 border-secondary'>
-                <div className='avatar'>
-                    {postOwner?.profileImg ?
-                        (
-                            <div className='size-8 rounded-full overflow-hidden'>
-                                <img src={postOwner?.profileImg} alt={postOwner.username} />
-                            </div>
-                        )
-                        :
-                        (
-                            <div className="avatar avatar-placeholder">
-                                <div className="bg-neutral text-neutral-content size-8 rounded-full">
-                                    <span>{postOwner.fullName[0]}</span>
-                                </div>
-                            </div>
-                        )
-                    }
-                </div>
-                <div className='flex flex-col flex-1'>
-                    <div className='flex gap-2 items-center'>
-                        <Link viewTransition to={`/profile/${postOwner.username}`} className='hover:underline underline-offset-2'>
-                            {postOwner.fullName}
-                        </Link>
-                        <span className='opacity-50 flex gap-1 text-sm items-center'>
-                            <Link className="hover:underline underline-offset-2" viewTransition to={`/profile/${postOwner.username}`}>@{postOwner.username}</Link>
-                            <span>-</span>
-                            <span>{formattedDate}</span>
-                        </span>
+            <div className='flex gap-3 px-4 py-3 border-b-4 border-secondary'>
+                <div className='flex flex-col justify-center flex-1 gap-4'>
+                    {/* Post header */}
+                    <div className="flex flex-row items-center gap-2">
+                        <div className='avatar'>
+                            {postOwner?.profileImg ?
+                                (
+                                    <div className='size-7 rounded-full overflow-hidden'>
+                                        <img src={postOwner?.profileImg} alt={postOwner.username} />
+                                    </div>
+                                )
+                                :
+                                (
+                                    <div className="avatar avatar-placeholder">
+                                        <div className="bg-neutral text-neutral-content size-7 rounded-full">
+                                            <span>{postOwner.fullName[0]}</span>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </div>
+                        <div className='flex gap-2 items-center'>
+                            <Link viewTransition to={`/profile/${postOwner.username}`} className='hover:underline underline-offset-2 font-semibold text-sm'>
+                                {postOwner.fullName}
+                            </Link>
+                            <span className='flex gap-1 text-sm items-center font-light'>
+                                <Link className="hover:underline underline-offset-2 text-primary" viewTransition to={`/profile/${postOwner.username}`}>@{postOwner.username}</Link>
+                                <span className="flex flex-row gap-0.5 items-center ml-3"><Clock2 className="size-4" />{formattedDate}</span>
+                            </span>
+                        </div>
                         {isMyPost && (
-                            <span className='flex justify-end flex-1'>
-                                <Trash2 className='size-5 cursor-pointer hover:text-red-400 transition-all duration-300' onClick={handleDeletePost} />
+                            <span className='ml-auto'>
+                                <Trash2 className='size-5 cursor-pointer hover:text-red-400 transition-all duration-200 ' onClick={handleDeletePost} />
                             </span>
                         )}
                     </div>
-                    <div className='flex flex-col gap-3 overflow-hidden mt-2'>
+                    {/* Post contents */}
+                    <div className='flex flex-col gap-3 overflow-hidden'>
                         <span>{post.text}</span>
                         {post.img && (
                             <img
@@ -68,11 +72,17 @@ const Post = ({ post }) => {
                             />
                         )}
                     </div>
-                    <div className='flex items-center mt-3'>
+                    {/* Post controls */}
+                    <div className='flex items-center'>
                         <div className='flex gap-4 items-center w-full justify-around'>
                             <div
                                 className='flex gap-1 items-center cursor-pointer group'
-                                onClick={() => document.getElementById("comments_modal" + post._id)!.showModal()}
+                                onClick={() => {
+                                    const modal = document.getElementById("comments_modal" + post._id);
+                                    if (modal instanceof HTMLDialogElement) {
+                                        modal.showModal()
+                                    }
+                                }}
                             >
                                 <MessageCircle className='size-4 text-slate-500 group-hover:text-cyan-400' />
                                 <span className='text-sm text-slate-500 group-hover:text-cyan-400'>
@@ -88,7 +98,7 @@ const Post = ({ post }) => {
                                                 No comments yet. Say something!
                                             </p>
                                         )}
-                                        {post.comments.map((comment) => (
+                                        {post.comments.map((comment: Comment) => (
                                             <div key={comment._id} className='flex gap-3'>
                                                 {comment?.user.profileImg ?
                                                     (
@@ -129,7 +139,7 @@ const Post = ({ post }) => {
                                         />
                                         <button className='btn btn-primary rounded-lg btn-sm px-4'>
                                             {isCommenting ? (
-                                                <span className='loading loading-spinner loading-md'></span>
+                                                <span className='loading loading-dots loading-md'></span>
                                             ) : (
                                                 "Comment"
                                             )}
