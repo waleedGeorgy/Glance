@@ -8,22 +8,24 @@ export const signup = async (req, res) => {
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+    if (!email || !emailRegex.test(email)) {
+      return res.status(400).json({ error: "Please provide a valid email" });
+    }
     if (!username || username.trim().length === 0) {
-      return res.status(400).json({ error: "Username is required" });
+      return res
+        .status(400)
+        .json({ error: "Please provide a unique username" });
     }
     if (!firstName || firstName.trim().length === 0) {
-      return res.status(400).json({ error: "First name is required" });
+      return res.status(400).json({ error: "Please provide a first name" });
     }
     if (!lastName || lastName.trim().length === 0) {
-      return res.status(400).json({ error: "Last name is required" });
+      return res.status(400).json({ error: "Please provide a last name" });
     }
     if (!password || password.trim().length < 6) {
       return res
         .status(400)
-        .json({ error: "At least 6 characters are required" });
-    }
-    if (!email || !emailRegex.test(email)) {
-      return res.status(400).json({ error: "Please provide a valid email" });
+        .json({ error: "Password must be at least 6 characters long" });
     }
 
     const existingUsername = await User.findOne({ username });
@@ -36,7 +38,7 @@ export const signup = async (req, res) => {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await User.create({
+    const newUser = new User({
       username,
       firstName,
       lastName,
@@ -55,7 +57,7 @@ export const signup = async (req, res) => {
     }
   } catch (error) {
     console.log("Error in signup controller" + error);
-    return res(500).json({ error: "Something went wrong" });
+    return res.status(500).json({ error: "Something went wrong" });
   }
 };
 
@@ -63,10 +65,10 @@ export const login = async (req, res) => {
   try {
     const { username, password } = req.body;
     if (!username || username.trim().length === 0) {
-      return res.status(400).json({ error: "Please provide a valid username" });
+      return res.status(400).json({ error: "Please enter your username" });
     }
     if (!password || password.trim().length === 0) {
-      return res.status(400).json({ error: "Please provide a valid password" });
+      return res.status(400).json({ error: "Please enter your password" });
     }
 
     const user = await User.findOne({ username });
@@ -103,6 +105,6 @@ export const checkAuth = async (req, res) => {
     return res.status(200).json(user);
   } catch (error) {
     console.log("Error in checkAuth controller" + error);
-    return res(500).json({ error: "Internal server error" });
+    return res.status(500).json({ error: "Internal server error" });
   }
 };

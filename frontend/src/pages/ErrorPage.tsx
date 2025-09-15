@@ -28,7 +28,7 @@ export default function ErrorPage() {
         if (isRouteErrorResponse(error)) {
             return error.status;
         }
-        return "Unknown";
+        return "Unknown error";
     };
 
     return (
@@ -37,7 +37,7 @@ export default function ErrorPage() {
                 Oops! Something went wrong
             </h1>
             <p className="text-lg sm:text-2xl font-semibold">
-                <span className="text-primary font-bold">{getErrorStatus()}</span> {getErrorMessage()}
+                <span className="text-primary font-bold">{getErrorStatus()}</span> - {getErrorMessage()}
             </p>
             <div className="flex flex-row items-center gap-3 mt-2">
                 <button onClick={() => { void navigate(-1) }} className="cursor-pointer btn btn-primary rounded-md">

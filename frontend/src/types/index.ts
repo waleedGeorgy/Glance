@@ -1,28 +1,29 @@
 export interface User {
   _id: string;
   username: string;
-  fullName: string;
-  profileImg?: string;
-  coverImg?: string;
+  firstName: string;
+  lastName: string;
+  profileImage?: string;
+  coverImage?: string;
   bio?: string;
   link?: string;
   following: string[];
   followers: string[];
 }
 
-export interface Comment {
-  _id: string;
-  text: string;
-  user: User;
-  createdAt: string; // or Date if you parse it
-}
-
 export interface Post {
   _id: string;
   text: string;
-  user: User;
+  byUser: User;
   img?: string;
   comments: Comment[];
   likes: string[];
-  createdAt: string; // or Date if you parse it
+  createdAt: string;
+}
+
+export interface Comment {
+  _id: string;
+  text: string;
+  by: User;
+  createdAt: string;
 }

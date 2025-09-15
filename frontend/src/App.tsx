@@ -1,13 +1,58 @@
-import { createBrowserRouter, RouterProvider } from "react-router";
+import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
+import { Toaster } from 'react-hot-toast';
+import MainLayout from "./layout/MainLayout";
 import HomePage from "./pages/HomePage";
 import SignupPage from "./pages/SignupPage";
 import LoginPage from "./pages/LoginPage";
 import ErrorPage from "./pages/ErrorPage";
-import MainLayout from "./layout/MainLayout";
 import NotificationPage from "./pages/NotificationPage";
 import ProfilePage from "./pages/ProfilePage";
+import { useQuery } from "@tanstack/react-query";
+import { createToast } from "./components/Toast";
+
+function ProtectedRoute({ children, authUser }: { children: React.ReactNode, authUser: unknown }) {
+  if (!authUser) {
+    return <Navigate to="/login" replace />;
+  }
+  return children;
+}
+
+function PublicOnlyRoute({ children, authUser }: { children: React.ReactNode, authUser: unknown }) {
+  if (authUser) {
+    return <Navigate to="/" replace />;
+  }
+  return children;
+}
 
 function App() {
+  const { data: authUser, isLoading } = useQuery({
+    queryKey: ["authUser"],
+    queryFn: async () => {
+      try {
+        const res = await fetch("http://localhost:8000/api/auth/checkAuth", { credentials: "include" });
+        const data = await res.json();
+        if (data.error) return null;
+
+        if (!res.ok) throw new Error(data.error || "Failed to create account");
+
+        return data;
+      } catch (error) {
+        console.error(error);
+        createToast("error", "Something went wrong");
+        return null;
+      }
+    },
+    retry: false
+  });
+
+  if (isLoading) {
+    return (
+      <div className="h-screen w-full flex items-center justify-center">
+        <span className="loading loading-dots loading-xl" />
+      </div>
+    )
+  }
+
   const router = createBrowserRouter([
     {
       element: <MainLayout />,
@@ -15,31 +60,54 @@ function App() {
       children: [
         {
           path: "/",
-          element: <HomePage />
+          element: (
+            <ProtectedRoute authUser={authUser}>
+              <HomePage />
+            </ProtectedRoute>
+          )
         },
         {
           path: "/notifications",
-          element: <NotificationPage />
+          element: (
+            <ProtectedRoute authUser={authUser}>
+              <NotificationPage />
+            </ProtectedRoute>
+          )
         },
         {
           path: "/profile/:username",
-          element: <ProfilePage />
+          element: (
+            <ProtectedRoute authUser={authUser}>
+              <ProfilePage />
+            </ProtectedRoute>
+          )
         },
       ]
     },
     {
       path: "/signup",
-      element: <SignupPage />,
+      element: (
+        <PublicOnlyRoute authUser={authUser}>
+          <SignupPage />
+        </PublicOnlyRoute>
+      ),
     },
     {
       path: "/login",
-      element: <LoginPage />,
+      element: (
+        <PublicOnlyRoute authUser={authUser}>
+          <LoginPage />
+        </PublicOnlyRoute>
+      ),
     },
   ]);
 
   return (
-    <RouterProvider router={router} />
+    <>
+      <RouterProvider router={router} />
+      <Toaster position="bottom-right" reverseOrder={true} />
+    </>
   )
 }
 
-export default App
+export default App;

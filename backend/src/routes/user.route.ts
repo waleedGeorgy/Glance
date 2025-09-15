@@ -10,8 +10,8 @@ import {
 const router = express.Router();
 
 router.get("/profile/:username", protectedRoute, getUserProfile);
-router.get("/suggested", protectedRoute, getSuggestedUsers);
-router.post("/follow/:userId", protectedRoute, followAndUnfollowUser);
 router.post("/update", protectedRoute, updateUserProfile);
+router.post("/follow/:userId", protectedRoute, followAndUnfollowUser);
+router.get("/suggested", protectedRoute, getSuggestedUsers);
 
 export default router;

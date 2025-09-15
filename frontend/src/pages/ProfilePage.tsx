@@ -9,7 +9,7 @@ import { POSTS } from "../data/dummy";
 const ProfilePage = () => {
     const [coverImg, setCoverImg] = useState<string | null>(null);
     const [profileImg, setProfileImg] = useState<string | null>(null);
-    const [feedType, setFeedType] = useState("posts");
+    const [feedTab, setFeedTab] = useState("posts");
 
     const coverImgRef = useRef<HTMLInputElement>(null);
     const profileImgRef = useRef<HTMLInputElement>(null);
@@ -165,26 +165,26 @@ const ProfilePage = () => {
                             <div className='flex w-full border-b border-accent mt-5'>
                                 <div
                                     className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer'
-                                    onClick={() => setFeedType("posts")}
+                                    onClick={() => setFeedTab("posts")}
                                 >
                                     Posts
-                                    {feedType === "posts" && (
+                                    {feedTab === "posts" && (
                                         <div className='absolute bottom-0 w-10 h-1 rounded-full bg-primary' />
                                     )}
                                 </div>
                                 <div
                                     className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer'
-                                    onClick={() => setFeedType("likes")}
+                                    onClick={() => setFeedTab("likes")}
                                 >
                                     Likes
-                                    {feedType === "likes" && (
+                                    {feedTab === "likes" && (
                                         <div className='absolute bottom-0 w-10 h-1 rounded-full bg-primary' />
                                     )}
                                 </div>
                             </div>
                         </>
                     )}
-                    <Posts />
+                    <Posts feedTab={feedTab} />
                 </div>
             </div>
         </>

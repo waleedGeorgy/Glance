@@ -3,7 +3,7 @@ import CreatePost from "../components/CreatePost";
 import Posts from "../components/Posts";
 
 const HomePage = () => {
-  const [feedType, setFeedType] = useState("forYou");
+  const [feedTab, setFeedTab] = useState("forYou");
 
   return (
     <>
@@ -13,25 +13,25 @@ const HomePage = () => {
             className={
               "flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 cursor-pointer relative"
             }
-            onClick={() => setFeedType("forYou")}
+            onClick={() => setFeedTab("forYou")}
           >
             For You
-            {feedType === "forYou" && (
+            {feedTab === "forYou" && (
               <div className='absolute bottom-0 w-12 h-1 rounded-full bg-primary'></div>
             )}
           </div>
           <div
             className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 cursor-pointer relative'
-            onClick={() => setFeedType("following")}
+            onClick={() => setFeedTab("following")}
           >
             Following
-            {feedType === "following" && (
+            {feedTab === "following" && (
               <div className='absolute bottom-0 w-14 h-1 rounded-full bg-primary'></div>
             )}
           </div>
         </div>
         <CreatePost />
-        <Posts />
+        <Posts feedTab={feedTab} />
       </div>
     </>
   );

@@ -1,5 +1,5 @@
-import { UserCircle2, UserPlus2, LockKeyhole } from "lucide-react";
 import { useState } from "react";
+import { UserCircle2, UserPlus2, LockKeyhole } from "lucide-react";
 
 const EditProfileModal = () => {
     const [formData, setFormData] = useState({

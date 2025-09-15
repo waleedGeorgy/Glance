@@ -1,6 +1,5 @@
 import { Link } from "react-router";
 import { Settings2, UserPlus2, Heart, XCircle, Trash2 } from "lucide-react"
-import LoadingSpinner from "../components/LoadingSpinner";
 
 const NotificationPage = () => {
     const isLoading = false;
@@ -54,7 +53,7 @@ const NotificationPage = () => {
                 </div>
                 {isLoading && (
                     <div className='flex justify-center h-full items-center'>
-                        <LoadingSpinner size='lg' />
+                        <span className="loading loading-dots loading-lg" />
                     </div>
                 )}
                 {notifications?.length === 0 && <div className='text-center p-4 font-bold'>No notifications 🤔</div>}

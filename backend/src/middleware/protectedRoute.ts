@@ -1,5 +1,8 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { User } from "../models/user.model.ts";
+import { config } from "dotenv";
+
+config();
 
 export const protectedRoute = async (req, res, next) => {
   try {
@@ -9,7 +12,10 @@ export const protectedRoute = async (req, res, next) => {
         .status(401)
         .json({ error: "Unauthorized: Token does not exist" });
 
-    const decodedToken = jwt.verify(token, process.env.JWT_SECRET as string) as JwtPayload;
+    const decodedToken = jwt.verify(
+      token,
+      process.env.JWT_SECRET as string
+    ) as JwtPayload;
     if (!decodedToken)
       return res.status(401).json({ error: "Unauthorized: Invalid token" });
 
@@ -17,7 +23,7 @@ export const protectedRoute = async (req, res, next) => {
     if (!user) return res.status(404).json({ error: "User not found" });
 
     req.user = user;
-    
+
     next();
   } catch (error) {
     console.log("Protected route error", error);

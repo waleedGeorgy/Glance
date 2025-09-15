@@ -1,6 +1,6 @@
 import { Link } from "react-router";
-import { USERS_FOR_RIGHT_PANEL } from "../data/dummy";
 import RightSidebarSkeleton from "./skeletons/RightSidebarSkeleton";
+import { USERS_FOR_RIGHT_PANEL } from "../data/dummy";
 
 const RightSidebar = () => {
     const isLoading = false;
