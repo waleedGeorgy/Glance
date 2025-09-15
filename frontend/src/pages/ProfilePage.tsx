@@ -42,7 +42,7 @@ const ProfilePage = () => {
     };
 
     return (
-        <>
+        <main>
             <div className='flex-[4_4_0] border-r border-accent min-h-screen'>
                 {isLoading && <ProfileHeaderSkeleton />}
                 {!isLoading && !user && <p className='text-center text-lg mt-4'>User not found</p>}
@@ -187,7 +187,7 @@ const ProfilePage = () => {
                     <Posts feedTab={feedTab} />
                 </div>
             </div>
-        </>
+        </main>
     );
 };
 export default ProfilePage;

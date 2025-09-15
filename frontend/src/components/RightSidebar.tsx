@@ -3,6 +3,7 @@ import RightSidebarSkeleton from "./skeletons/RightSidebarSkeleton";
 import { useQuery } from "@tanstack/react-query";
 import { createToast } from "./Toast";
 import type { User } from "../types";
+import useFollow from "../hooks/useFollow";
 
 const RightSidebar = () => {
     const { data: suggestedUsers, isLoading } = useQuery({
@@ -24,6 +25,8 @@ const RightSidebar = () => {
             }
         }
     });
+
+    const { followUnfollow, isPending } = useFollow();
 
     if (suggestedUsers?.length === 0) return <div className="md:w-64 w-0"></div>
 
@@ -70,10 +73,14 @@ const RightSidebar = () => {
                                     </div>
                                     <div>
                                         <button
+                                            disabled={isPending}
                                             className='btn btn-primary btn-outline rounded-full btn-sm'
-                                            onClick={(e) => e.preventDefault()}
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                followUnfollow(user?._id);
+                                            }}
                                         >
-                                            Follow
+                                            {isPending ? (<span><span className="loading loading-dots loading-xs" /></span>) : (<span>Follow</span>)}
                                         </button>
                                     </div>
                                 </Link>
