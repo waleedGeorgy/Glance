@@ -15,7 +15,7 @@ export interface Post {
   _id: string;
   text: string;
   byUser: User;
-  img?: string;
+  image?: string;
   comments: Comment[];
   likes: string[];
   createdAt: string;

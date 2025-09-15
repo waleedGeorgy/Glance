@@ -2,8 +2,9 @@ import { Post } from "./../models/post.model.ts";
 import cloudinary from "../lib/cloudinary.ts";
 import { User } from "../models/user.model.ts";
 import { Notification } from "../models/notification.model.ts";
+import { type Response } from "express";
 
-export const createNewPost = async (req, res) => {
+export const createNewPost = async (req: any, res: Response) => {
   try {
     const { text } = req.body;
     let { image } = req.body;
@@ -17,8 +18,8 @@ export const createNewPost = async (req, res) => {
       return res.status(400).json({ error: "Cannot create an empty post" });
 
     if (image) {
-      const res = cloudinary.uploader.upload(image, { folder: "Glance" });
-      image = (await res).secure_url;
+      const res = await cloudinary.uploader.upload(image, { folder: "Glance" });
+      image = res.secure_url;
     }
 
     const newPost = await Post.create({
@@ -36,21 +37,23 @@ export const createNewPost = async (req, res) => {
   }
 };
 
-export const deletePost = async (req, res) => {
+export const deletePost = async (req: any, res: Response) => {
   try {
     const { postId } = req.params;
+
     const foundPost = await Post.findById(postId);
     if (!foundPost)
       return res.status(400).json({ error: "Post does not exist" });
 
-    if (foundPost.byUser != req.user._id.toString())
+    if (foundPost.byUser.toString() !== req.user._id.toString())
       return res
         .status(400)
         .json({ error: "You are not allowed to delete this post" });
 
     if (foundPost.image) {
       const imageId = foundPost.image.split("/").pop()?.split(".")[0] as string;
-      await cloudinary.uploader.destroy(imageId);
+      const imageToDelete = `Glance/${imageId}`;
+      await cloudinary.uploader.destroy(imageToDelete);
     }
 
     await Post.findByIdAndDelete(postId);
@@ -62,7 +65,7 @@ export const deletePost = async (req, res) => {
   }
 };
 
-export const commentOnPost = async (req, res) => {
+export const commentOnPost = async (req: any, res: Response) => {
   try {
     const { postId } = req.params;
     const currentUserId = req.user._id;
@@ -87,7 +90,7 @@ export const commentOnPost = async (req, res) => {
   }
 };
 
-export const likeAndUnlikePost = async (req, res) => {
+export const likeAndUnlikePost = async (req: any, res: Response) => {
   try {
     const currentUserId = req.user._id;
     const { postId } = req.params;
@@ -118,13 +121,13 @@ export const likeAndUnlikePost = async (req, res) => {
 
       await currentPost.save();
 
-      const newNotification = Notification.create({
+      const newNotification = await Notification.create({
         from: currentUserId,
         to: currentPost.byUser,
         type: "like",
       });
 
-      (await newNotification).save();
+      await newNotification.save();
       return res.status(200).json({ message: "Post liked successfully" });
     }
   } catch (error) {
@@ -133,10 +136,10 @@ export const likeAndUnlikePost = async (req, res) => {
   }
 };
 
-export const getAllPosts = async (req, res) => {
+export const getAllPosts = async (req: any, res: Response) => {
   try {
     const posts = await Post.find()
-      .sort({ createAt: -1 })
+      .sort({ _id: -1 })
       .populate({
         path: "byUser",
         select: "-password",
@@ -155,7 +158,7 @@ export const getAllPosts = async (req, res) => {
   }
 };
 
-export const getLikedPosts = async (req, res) => {
+export const getLikedPosts = async (req: any, res: Response) => {
   try {
     const userId = req.params.id;
 
@@ -179,7 +182,7 @@ export const getLikedPosts = async (req, res) => {
   }
 };
 
-export const getFollowingPosts = async (req, res) => {
+export const getFollowingPosts = async (req: any, res: Response) => {
   try {
     const currentUserId = req.user._id;
 
@@ -190,7 +193,7 @@ export const getFollowingPosts = async (req, res) => {
     const followingPosts = await Post.find({
       byUser: { $in: currentUser.following },
     })
-      .sort({ createdAt: -1 })
+      .sort({ _id: -1 })
       .populate({
         path: "byUser",
         select: "-password",
@@ -207,7 +210,7 @@ export const getFollowingPosts = async (req, res) => {
   }
 };
 
-export const getUserPosts = async (req, res) => {
+export const getUserPosts = async (req: any, res: Response) => {
   try {
     const { username } = req.params;
     const currentUser = await User.findOne({ username }).select("-password");
@@ -215,7 +218,7 @@ export const getUserPosts = async (req, res) => {
 
     const userPosts = await Post.find({ byUser: currentUser?._id })
       .sort({
-        createdAt: -1,
+        _id: -1,
       })
       .populate({
         path: "byUser",

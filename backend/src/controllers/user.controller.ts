@@ -2,8 +2,9 @@ import bcrypt from "bcryptjs";
 import { Notification } from "../models/notification.model.ts";
 import { User } from "../models/user.model.ts";
 import cloudinary from "../lib/cloudinary.ts";
+import { type Response } from "express";
 
-export const getUserProfile = async (req, res) => {
+export const getUserProfile = async (req: any, res: Response) => {
   try {
     const { username } = req.params;
     if (!username)
@@ -22,7 +23,7 @@ export const getUserProfile = async (req, res) => {
   }
 };
 
-export const followAndUnfollowUser = async (req, res) => {
+export const followAndUnfollowUser = async (req: any, res: Response) => {
   try {
     const { userId } = req.params;
 
@@ -74,7 +75,7 @@ export const followAndUnfollowUser = async (req, res) => {
   }
 };
 
-export const getSuggestedUsers = async (req, res) => {
+export const getSuggestedUsers = async (req: any, res: Response) => {
   try {
     const currentUserId = req.user._id;
 
@@ -105,7 +106,7 @@ export const getSuggestedUsers = async (req, res) => {
   }
 };
 
-export const updateUserProfile = async (req, res) => {
+export const updateUserProfile = async (req: any, res: Response) => {
   try {
     const currentUserId = req.user._id;
     const {
@@ -151,9 +152,10 @@ export const updateUserProfile = async (req, res) => {
 
     if (profileImage) {
       if (currentUser.profileImage) {
-        await cloudinary.uploader.destroy(
+        const profileImageToDelete = `Glance/${
           currentUser.profileImage.split("/").pop()?.split(".")[0] as string
-        );
+        }`;
+        await cloudinary.uploader.destroy(profileImageToDelete);
       }
       const res = await cloudinary.uploader.upload(profileImage, {
         folder: "Glance",
@@ -163,9 +165,10 @@ export const updateUserProfile = async (req, res) => {
 
     if (coverImage) {
       if (currentUser.coverImage) {
-        await cloudinary.uploader.destroy(
+        const coverImageToDelete = `Glance/${
           currentUser.coverImage.split("/").pop()?.split(".")[0] as string
-        );
+        }`;
+        await cloudinary.uploader.destroy(coverImageToDelete);
       }
       const res = await cloudinary.uploader.upload(coverImage, {
         folder: "Glance",

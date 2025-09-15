@@ -1,22 +1,54 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Image, Smile, X } from "lucide-react";
 import EmojiPicker, { Theme, EmojiStyle, type EmojiClickData } from 'emoji-picker-react';
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createToast } from "./Toast";
 
 const CreatePost = () => {
-  const [text, setText] = useState("");
-  const [img, setImg] = useState<string | null>(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [text, setText] = useState<string>("");
+  const [image, setImage] = useState<string | null>(null);
+  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
 
   const imgRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const emojiButtonRef = useRef<HTMLDivElement>(null);
 
-  const isPending = false;
-  const isError = false;
+  const queryClient = useQueryClient();
+  const { mutate: createPost, isPending } = useMutation({
+    mutationFn: async ({ text, image }: { text: string, image: string | null }) => {
+      try {
+        const res = await fetch("http://localhost:8000/api/posts/create", {
+          method: "POST",
+          credentials: "include",
+          body: JSON.stringify({ text, image }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        });
+        const data = await res.json();
+
+        if (!res.ok) {
+          createToast("error", data.error || "Something went wrong");
+          throw new Error;
+        }
+
+        return data;
+      } catch (error) {
+        console.log(error);
+        throw error;
+      }
+    },
+    onSuccess: () => {
+      setText("");
+      setImage(null);
+      createToast("success", "Post created successfully!");
+      queryClient.invalidateQueries({ queryKey: ["posts"] });
+    }
+  });
 
   const handleCreatePost = (e: FormEvent) => {
     e.preventDefault();
-    alert("Post created successfully");
+    createPost({ text, image });
   };
 
   const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -24,7 +56,7 @@ const CreatePost = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setImg(reader.result as string);
+        setImage(reader.result as string);
       };
       reader.readAsDataURL(file);
     }
@@ -81,33 +113,34 @@ const CreatePost = () => {
           onChange={(e) => setText(e.target.value)}
           onClick={() => setShowEmojiPicker(false)}
         />
-        {img && (
+        {image && (
           <div className='relative mx-auto'>
             <X
               className='absolute top-2 right-2 bg-secondary rounded-full size-5 cursor-pointer hover:scale-110'
               onClick={() => {
-                setImg(null);
+                setImage(null);
                 if (imgRef.current) {
                   imgRef.current.value = "";
                 }
               }}
             />
-            <img src={img} className='w-full mx-auto h-80 object-contain rounded border border-accent' />
+            <img src={image} className='w-full mx-auto h-72 object-contain rounded border border-accent' />
           </div>
         )}
         <div className='flex justify-between py-2 px-4 border-t border-accent'>
           <div className='flex gap-2 items-center'>
             <Image
-              className='size-6 text-primary cursor-pointer hover:scale-105'
+              className={`size-6 ${isPending ? ("text-neutral-600 hover:scale-100 pointer-events-none") : ("text-primary hover:scale-105 cursor-pointer")}`}
               onClick={() => imgRef.current?.click()}
             />
             <div ref={emojiButtonRef} className="relative">
               <Smile
-                className='size-6 text-primary cursor-pointer hover:scale-105'
+                aria-disabled={isPending}
+                className={`size-6 ${isPending ? ("text-neutral-600 hover:scale-100 pointer-events-none") : ("text-primary hover:scale-105 cursor-pointer")}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               />
               {showEmojiPicker && (
-                <div className="absolute top-full left-0 z-10">
+                <div className="absolute top-full left-0 z-10" aria-disabled={isPending}>
                   <EmojiPicker
                     onEmojiClick={handleEmojiClick}
                     width={350}
@@ -120,11 +153,10 @@ const CreatePost = () => {
             </div>
           </div>
           <input type='file' accept="image/*" hidden ref={imgRef} onChange={handleImgChange} />
-          <button className='btn btn-primary rounded-full btn-sm px-5'>
-            {isPending ? "Posting..." : "Post"}
+          <button className='btn btn-primary rounded-full btn-sm px-5' disabled={isPending || (!text && !image)}>
+            {isPending ? <span>Posting <span className="loading loading-dots loading-sm" /></span> : <span>Post</span>}
           </button>
         </div>
-        {isError && <div className='text-red-400'>Something went wrong</div>}
       </form>
     </div>
   );

@@ -1,10 +1,11 @@
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { User } from "../models/user.model.ts";
 import { config } from "dotenv";
+import { type NextFunction, type Response } from "express";
 
 config();
 
-export const protectedRoute = async (req, res, next) => {
+export const protectedRoute = async (req: any, res: Response, next: NextFunction) => {
   try {
     const token = req.cookies.jwt;
     if (!token)

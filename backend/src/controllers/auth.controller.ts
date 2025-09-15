@@ -1,8 +1,9 @@
 import bcrypt from "bcryptjs";
+import { type Response } from "express";
 import { User } from "../models/user.model.ts";
 import { generateTokenSetCookie } from "../lib/generateTokens.ts";
 
-export const signup = async (req, res) => {
+export const signup = async (req: any, res: Response) => {
   try {
     const { username, firstName, lastName, password, email } = req.body;
 
@@ -61,7 +62,7 @@ export const signup = async (req, res) => {
   }
 };
 
-export const login = async (req, res) => {
+export const login = async (req: any, res: Response) => {
   try {
     const { username, password } = req.body;
     if (!username || username.trim().length === 0) {
@@ -89,7 +90,7 @@ export const login = async (req, res) => {
   }
 };
 
-export const logout = (req, res) => {
+export const logout = (req: any, res: Response) => {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
     return res.status(200).json({ message: "Logged out successfully" });
@@ -99,7 +100,7 @@ export const logout = (req, res) => {
   }
 };
 
-export const checkAuth = async (req, res) => {
+export const checkAuth = async (req: any, res: Response) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
     return res.status(200).json(user);

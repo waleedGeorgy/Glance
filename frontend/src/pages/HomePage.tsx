@@ -7,7 +7,7 @@ const HomePage = () => {
 
   return (
     <>
-      <div className='flex-[4_4_0] mr-auto border-r border-accent min-h-screen'>
+      <div className='flex-[4_4_0] mr-auto border-r border-accent min-h-screen pb-2'>
         <div className='flex w-full border-b border-accent'>
           <div
             className={

@@ -14,7 +14,7 @@ const SERVER_PORT = process.env.SERVER_PORT;
 
 const app = express();
 
-app.use(express.json());
+app.use(express.json({ limit: "3mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(
@@ -25,7 +25,7 @@ app.use(
 );
 
 app.use("/api/auth", authRouter);
-app.use("/api/user", userRouter);
+app.use("/api/users", userRouter);
 app.use("/api/posts", postsRouter);
 app.use("/api/notifications", notificationRouter);
 

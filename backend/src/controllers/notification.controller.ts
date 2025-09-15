@@ -1,6 +1,7 @@
 import { Notification } from "../models/notification.model.ts";
+import { type Response } from "express";
 
-export const getAllNotifications = async (req, res) => {
+export const getAllNotifications = async (req: any, res: Response) => {
   try {
     const currentUserId = req.user._id;
 
@@ -20,7 +21,7 @@ export const getAllNotifications = async (req, res) => {
   }
 };
 
-export const deleteNotification = async (req, res) => {
+export const deleteNotification = async (req: any, res: Response) => {
   try {
     const currentUserId = req.user._id;
 
@@ -35,7 +36,7 @@ export const deleteNotification = async (req, res) => {
   }
 };
 
-export const deleteOneNotification = async (req, res) => {
+export const deleteOneNotification = async (req: any, res: Response) => {
   try {
     const notificationId = req.params;
     const currentUserId = req.user._id;

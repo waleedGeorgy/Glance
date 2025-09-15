@@ -1,9 +1,31 @@
 import { Link } from "react-router";
 import RightSidebarSkeleton from "./skeletons/RightSidebarSkeleton";
-import { USERS_FOR_RIGHT_PANEL } from "../data/dummy";
+import { useQuery } from "@tanstack/react-query";
+import { createToast } from "./Toast";
+import type { User } from "../types";
 
 const RightSidebar = () => {
-    const isLoading = false;
+    const { data: suggestedUsers, isLoading } = useQuery({
+        queryKey: ["suggestedUsers"],
+        queryFn: async () => {
+            try {
+                const res = await fetch("http://localhost:8000/api/users/suggested", { credentials: "include" });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    createToast("error", "Failed to fetch suggested users");
+                    throw new Error(data.error || "Something went wrong");
+                }
+
+                return data;
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+        }
+    });
+
+    if (suggestedUsers?.length === 0) return <div className="md:w-64 w-0"></div>
 
     return (
         <div className='hidden lg:block ml-2'>
@@ -11,56 +33,53 @@ const RightSidebar = () => {
                 <p className='mb-3 font-semibold'>Suggested users</p>
                 <div className='flex justify-center flex-col gap-4'>
                     {isLoading ?
-                        (
-                            <RightSidebarSkeleton />
-                        )
+                        (<RightSidebarSkeleton />)
                         :
-                        (
-                            <>
-                                {USERS_FOR_RIGHT_PANEL?.map((user) => (
-                                    <Link
-                                        viewTransition
-                                        to={`/profile/${user.username}`}
-                                        className='flex items-center justify-between gap-4'
-                                        key={user._id}
-                                    >
-                                        <div className='flex gap-2 items-center'>
-                                            <div className='avatar'>
-                                                {user?.profileImg ?
-                                                    (
-                                                        <div className='size-9 rounded-full'>
-                                                            <img src={user?.profileImg} alt={user?.username} />
+                        (<>
+                            {suggestedUsers?.map((user: User) => (
+                                <Link
+                                    viewTransition
+                                    to={`/profile/${user.username}`}
+                                    className='flex items-center justify-between gap-4'
+                                    key={user._id}
+                                >
+                                    <div className='flex gap-2 items-center'>
+                                        <div className='avatar'>
+                                            {user?.profileImage ?
+                                                (
+                                                    <div className='size-9 rounded-full'>
+                                                        <img src={user?.profileImage} alt={user?.username} />
+                                                    </div>
+                                                )
+                                                :
+                                                (
+                                                    <div className="avatar avatar-placeholder">
+                                                        <div className="bg-neutral text-neutral-content size-9 rounded-full">
+                                                            <span>{user.firstName[0]}</span>
                                                         </div>
-                                                    )
-                                                    :
-                                                    (
-                                                        <div className="avatar avatar-placeholder">
-                                                            <div className="bg-neutral text-neutral-content size-9 rounded-full">
-                                                                <span>{user.fullName[0]}</span>
-                                                            </div>
-                                                        </div>
-                                                    )
-                                                }
-                                            </div>
-                                            <div className='flex flex-col'>
-                                                <span className='truncate w-28 text-sm'>
-                                                    {user.fullName}
-                                                </span>
-                                                <span className='text-xs opacity-50 font-light'>@{user.username}</span>
-                                            </div>
+                                                    </div>
+                                                )
+                                            }
                                         </div>
-                                        <div>
-                                            <button
-                                                className='btn btn-primary btn-outline rounded-full btn-sm'
-                                                onClick={(e) => e.preventDefault()}
-                                            >
-                                                Follow
-                                            </button>
+                                        <div className='flex flex-col'>
+                                            <span className='truncate w-28 text-sm'>
+                                                {user.firstName} {user.lastName}
+                                            </span>
+                                            <span className='text-xs opacity-50 font-light'>@{user.username}</span>
                                         </div>
-                                    </Link>
-                                ))}
-                            </>
-                        )}
+                                    </div>
+                                    <div>
+                                        <button
+                                            className='btn btn-primary btn-outline rounded-full btn-sm'
+                                            onClick={(e) => e.preventDefault()}
+                                        >
+                                            Follow
+                                        </button>
+                                    </div>
+                                </Link>
+                            ))}
+                        </>)
+                    }
                 </div>
             </div>
         </div>
