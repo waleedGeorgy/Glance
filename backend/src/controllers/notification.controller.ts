@@ -9,7 +9,7 @@ export const getAllNotifications = async (req: any, res: Response) => {
       to: currentUserId,
     }).populate({
       path: "from",
-      select: "username, profileImage",
+      select: "_id firstName lastName username profileImage",
     });
 
     await Notification.updateMany({ to: currentUserId }, { read: true });
@@ -21,7 +21,7 @@ export const getAllNotifications = async (req: any, res: Response) => {
   }
 };
 
-export const deleteNotification = async (req: any, res: Response) => {
+export const deleteNotifications = async (req: any, res: Response) => {
   try {
     const currentUserId = req.user._id;
 
@@ -38,19 +38,19 @@ export const deleteNotification = async (req: any, res: Response) => {
 
 export const deleteOneNotification = async (req: any, res: Response) => {
   try {
-    const notificationId = req.params;
+    const { id } = req.params;
     const currentUserId = req.user._id;
 
-    const notification = await Notification.findById(notificationId);
+    const notification = await Notification.findById(id);
     if (!notification)
       return res.status(404).json({ error: "Notification does not exist" });
 
-    if (notification.to != currentUserId)
+    if (notification.to.toString() !== currentUserId.toString())
       return res
         .status(403)
         .json({ error: "You are not allowed to delete this notification" });
 
-    await Notification.findByIdAndDelete(notificationId);
+    await Notification.findByIdAndDelete(id);
 
     return res.status(200).json({ error: "Notification deleted successfully" });
   } catch (error) {

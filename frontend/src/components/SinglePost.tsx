@@ -10,8 +10,9 @@ const SinglePost = ({ post }: { post: Post }) => {
     const { data: authUser } = useQuery<User>({ queryKey: ["authUser"] });
     const isMyPost = authUser?._id === post.byUser._id;
 
-    const queryClient = useQueryClient()
-    const { mutate: deletePost, isPending } = useMutation({
+    const queryClient = useQueryClient();
+
+    const { mutate: deletePost, isPending: isDeleting } = useMutation({
         mutationFn: async () => {
             try {
                 const res = await fetch(`http://localhost:8000/api/posts/${post._id}`, {
@@ -30,18 +31,56 @@ const SinglePost = ({ post }: { post: Post }) => {
         onSuccess: () => {
             createToast("success", "Post deleted successfully!");
             queryClient.invalidateQueries({ queryKey: ["posts"] });
+        },
+        onError: (error) => {
+            createToast("error", error.message);
         }
     });
 
-    const isLiked = false;
+    const { mutate: likeAndUnlikePost, isPending: isLiking } = useMutation({
+        mutationFn: async () => {
+            try {
+                const res = await fetch(`http://localhost:8000/api/posts/like/${post._id}`, {
+                    method: "POST", credentials: "include"
+                });
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+                return data;
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+        },
+        onSuccess: (updatedLikes) => {
+            queryClient.setQueryData(["posts"], (oldData: Post[]) => {
+                return oldData.map((p) => {
+                    if (p._id === post._id) {
+                        return { ...p, likes: updatedLikes }
+                    }
+                    return p;
+                });
+            });
+        },
+        onError: (error) => {
+            createToast("error", error.message);
+        }
+    });
+
+
+    const isLiked = post.likes.includes(authUser?._id as string);
 
     const formattedDate = "1h";
 
-    const handleDeletePost = () => {
+    const handlePostDelete = () => {
         deletePost();
     };
 
-    const handleLikePost = () => { };
+    const handlePostLike = () => {
+        if (isLiking) return;
+        likeAndUnlikePost();
+    };
 
     return (
         <>
@@ -49,7 +88,7 @@ const SinglePost = ({ post }: { post: Post }) => {
                 <div className='flex flex-col justify-center flex-1 gap-4'>
                     {/* Post header */}
                     <div className="flex flex-row items-center gap-2">
-                        <div className={`flex flex-row items-center gap-2 ${isMyPost ? ("bg-gradient-to-r from-sky-950 to bg-indigo-950") : ("bg-secondary")}  w-fit pr-2 rounded-full`}>
+                        <div className={`flex flex-row items-center gap-2 ${isMyPost ? ("bg-gradient-to-r from-sky-950 to bg-indigo-950") : ("bg-secondary")} w-fit pr-2 rounded-full`}>
                             <div className='avatar'>
                                 {postOwner?.profileImage ?
                                     (
@@ -83,10 +122,10 @@ const SinglePost = ({ post }: { post: Post }) => {
                         </div>
                         {isMyPost && (
                             <span className='ml-auto'>
-                                {isPending ?
+                                {isDeleting ?
                                     (<span className="loading loading-spinner loading-sm" />)
                                     :
-                                    (<Trash2 className='size-5 cursor-pointer hover:text-red-400 transition-all duration-200 ' onClick={handleDeletePost} />)
+                                    (<Trash2 className='size-5 cursor-pointer hover:text-red-400 transition-all duration-200 ' onClick={handlePostDelete} />)
                                 }
                             </span>
                         )}
@@ -105,13 +144,14 @@ const SinglePost = ({ post }: { post: Post }) => {
                     {/* Post controls */}
                     <div className='flex items-center'>
                         <div className='flex gap-4 items-center w-full justify-around'>
-                            <div className='flex gap-1 items-center group cursor-pointer' onClick={handleLikePost}>
-                                {!isLiked && (
-                                    <Heart className='size-5 cursor-pointer text-slate-500 group-hover:text-pink-500' />
+                            <div className='flex gap-1 items-center group cursor-pointer' onClick={handlePostLike}>
+                                {isLiking && (<span className="loading loading-spinner loading-sm" />)}
+                                {(!isLiked && !isLiking) && (
+                                    <Heart className='size-5 cursor-pointer  bg text-slate-500 group-hover:text-rose-500 transition-all duration-300' />
                                 )}
-                                {isLiked && <Heart className='size-5 cursor-pointer text-pink-500 ' />}
+                                {isLiked && !isLiking && <Heart className='size-5 cursor-pointer text-rose-500 fill-rose-500' />}
                                 <span
-                                    className={`text-sm text-slate-500 group-hover:text-pink-500 ${isLiked ? "text-pink-500" : ""
+                                    className={`text-sm transition-all duration-300 group-hover:text-rose-500 ${isLiked ? "text-rose-500 " : "text-slate-500"
                                         }`}
                                 >
                                     {post.likes.length}
@@ -119,10 +159,9 @@ const SinglePost = ({ post }: { post: Post }) => {
                             </div>
                             <Comments post={post} />
                             <div className='flex gap-1 items-center group cursor-pointer'>
-                                <Repeat className='size-5 text-slate-500 group-hover:text-emerald-500' />
-                                <span className='text-sm text-slate-500 group-hover:text-emerald-500'>0</span>
+                                <Repeat className='size-5 text-slate-500 group-hover:text-emerald-500 transition-all duration-300' />
+                                <span className='text-sm text-slate-500 group-hover:text-emerald-500 transition-all duration-300'>0</span>
                             </div>
-
                         </div>
                     </div>
                 </div>

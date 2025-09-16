@@ -70,15 +70,15 @@ const LeftSidebar = () => {
                                 <div className='avatar'>
                                     {user?.profileImage ?
                                         (
-                                            <div className='size-8 rounded-full'>
+                                            <div className='size-9 rounded-full'>
                                                 <img src={user?.profileImage} alt={user?.username} />
                                             </div>
                                         )
                                         :
                                         (
                                             <div className="avatar avatar-placeholder">
-                                                <div className="bg-neutral text-neutral-content size-8 rounded-full">
-                                                    <span>{user?.firstName[0]}</span>
+                                                <div className="bg-neutral text-neutral-content size-9 rounded-full border-2 border-primary">
+                                                    <span className='font-semibold'>{user?.firstName[0]}</span>
                                                 </div>
                                             </div>
                                         )
@@ -96,7 +96,6 @@ const LeftSidebar = () => {
                                 :
                                 (<LogOut className='size-5 hidden md:inline-block cursor-pointer hover:text-red-400 transition-all duration-300' onClick={() => { mutate() }} />)
                             }
-
                         </div>
                     )}
                 </ul>

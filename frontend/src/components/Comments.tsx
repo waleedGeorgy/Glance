@@ -1,16 +1,59 @@
 import { useState, type FormEvent } from 'react'
 import { Link } from 'react-router';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { MessageCircle } from 'lucide-react';
-import type { Post } from '../types';
+import type { Post, User, Comment } from '../types';
+import { createToast } from './Toast';
 
 const Comments = ({ post }: { post: Post }) => {
     const [comment, setComment] = useState("");
 
-    const isCommenting = false;
+    const { data: authUser } = useQuery<User>({ queryKey: ["authUser"] });
+
+    const queryClient = useQueryClient();
+
+    const { mutate: addComment, isPending: isCommenting } = useMutation({
+        mutationFn: async () => {
+            try {
+                const res = await fetch(`http://localhost:8000/api/posts/comment/${post._id}`, {
+                    method: "POST",
+                    credentials: "include",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ text: comment }),
+                });
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+                return data;
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+        },
+        onSuccess: (updatedComments) => {
+            queryClient.setQueryData(["posts"], (oldData: Post[]) => {
+                return oldData.map((p) => {
+                    if (p._id === post._id) {
+                        return { ...p, comments: updatedComments }
+                    }
+                    return p;
+                });
+            });
+            setComment("");
+            createToast("success", "Comment added!");
+        },
+        onError: (error) => {
+            createToast("error", error.message);
+        }
+    });
 
     const handlePostComment = (e: FormEvent) => {
         e.preventDefault();
-        alert("Commented successfully!")
+        if (isCommenting) return;
+        addComment();
     };
 
     return (
@@ -24,8 +67,8 @@ const Comments = ({ post }: { post: Post }) => {
                     }
                 }}
             >
-                <MessageCircle className='size-4 text-slate-500 group-hover:text-cyan-400' />
-                <span className='text-sm text-slate-500 group-hover:text-cyan-400'>
+                <MessageCircle className='size-4 text-slate-500 group-hover:text-cyan-400 transition-all duration-300' />
+                <span className='text-sm text-slate-500 group-hover:text-cyan-400 transition-all duration-300'>
                     {post.comments.length}
                 </span>
             </div>
@@ -33,40 +76,49 @@ const Comments = ({ post }: { post: Post }) => {
                 <div className='modal-box rounded-lg border border-accent space-y-5'>
                     <h3 className='text-2xl text-right font-bold'>Comments</h3>
                     <div className='flex flex-col'>
-                        {post.comments.length == 0 && (
-                            <p className='text-sm opacity-50'>
-                                No comments yet. Say something!
+                        {post.comments.length === 0 && (
+                            <p className='font-light'>
+                                No comments yet. Say something 🤔
                             </p>
                         )}
-                        {post.comments.map((comment) => (
-                            <div className='space-y-3 border-b border-accent pb-2' key={comment._id}>
-                                <div key={comment._id} className='flex items-center gap-3 bg-secondary w-fit px-2 py-1 rounded-full'>
-                                    {comment?.by.profileImage ?
-                                        (
-                                            <div className='size-7 rounded-full overflow-hidden'>
-                                                <img src={comment.by?.profileImage} alt={comment.by.username} />
-                                            </div>
-                                        )
-                                        :
-                                        (
-                                            <div className="avatar avatar-placeholder">
-                                                <div className="bg-neutral text-neutral-content size-7 rounded-full">
-                                                    <span>{comment.by.firstName[0]}</span>
-                                                </div>
-                                            </div>
-                                        )
-                                    }
-                                    <div className='flex items-center gap-2'>
-                                        <span className='text-sm'>{comment.by.firstName} {comment.by.lastName}</span>
-                                        <span className='opacity-50 text-lg'>|</span>
-                                        <Link viewTransition to={`/profile/${comment.by.username}`} className='hover:underline underline-offset-2 text-primary font-light'>
-                                            <span>@{comment.by.username}</span>
-                                        </Link>
+                        {post.comments.map((comment: Comment) => {
+                            const isMyComment = authUser?._id === comment?.by._id;
+                            return (
+                                <div className='space-y-3 border-b border-accent py-2' key={comment?._id}>
+                                    <div className={`flex items-center gap-2 w-fit pr-2 rounded-full ${isMyComment ? ("bg-gradient-to-r from-sky-950 to bg-indigo-950") : ("bg-secondary")}`}>
+                                        {comment?.by.profileImage ?
+                                            (
+                                                <Link viewTransition to={`/profile/${comment?.by.username}`} className='hover:underline underline-offset-2'>
+                                                    <div className='size-7 rounded-full overflow-hidden'>
+                                                        <img src={comment?.by.profileImage} alt={comment?.by.username} />
+                                                    </div>
+                                                </Link>
+                                            )
+                                            :
+                                            (
+                                                <Link viewTransition to={`/profile/${comment?.by.username}`} className='hover:underline underline-offset-2'>
+                                                    <div className="avatar avatar-placeholder">
+                                                        <div className="bg-neutral text-neutral-content size-7 rounded-full">
+                                                            <span>{comment?.by.firstName[0]}</span>
+                                                        </div>
+                                                    </div>
+                                                </Link>
+                                            )
+                                        }
+                                        <div className="flex items-center gap-2">
+                                            <Link viewTransition to={`/profile/${comment?.by.username}`} className='hover:underline underline-offset-2'>
+                                                <span className='text-sm'>{comment?.by.firstName} {comment?.by.lastName}</span>
+                                            </Link>
+                                            <span className='opacity-50 text-lg'>|</span>
+                                            <Link viewTransition to={`/profile/${comment?.by.username}`} className='hover:underline underline-offset-2 text-primary text-sm'>
+                                                <span>@{comment?.by.username}</span>
+                                            </Link>
+                                        </div>
                                     </div>
+                                    <p className='text-lg'>{comment?.text}</p>
                                 </div>
-                                <p>{comment.text}</p>
-                            </div>
-                        ))}
+                            )
+                        })}
                     </div>
                     <form
                         className='flex flex-col gap-2 items-end mt-6'
@@ -74,13 +126,14 @@ const Comments = ({ post }: { post: Post }) => {
                     >
                         <textarea
                             className='textarea w-full rounded resize-none border focus:outline-none border-accent'
-                            placeholder='Add a comment...'
+                            placeholder='Comment...'
+                            name="comment"
                             value={comment}
                             onChange={(e) => setComment(e.target.value)}
                         />
-                        <button className='btn btn-primary rounded-full btn-sm px-4'>
+                        <button className='btn btn-primary rounded-full btn-sm px-4' disabled={isCommenting}>
                             {isCommenting ? (
-                                <span className='loading loading-dots loading-md'></span>
+                                <span className='loading loading-dots loading-sm'></span>
                             ) : (
                                 "Comment"
                             )}

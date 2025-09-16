@@ -83,7 +83,12 @@ export const commentOnPost = async (req: any, res: Response) => {
 
     await currentPost.save();
 
-    return res.status(200).json(currentPost);
+    const populatedPost = await Post.findById(postId).populate({
+      path: "comments.by",
+      select: "_id firstName lastName username profileImage",
+    });
+
+    return res.status(200).json(populatedPost?.comments);
   } catch (error) {
     console.log("Error in commentOnPost", error);
     return res.status(500).json({ error: "Internal Server Error" });
@@ -110,7 +115,11 @@ export const likeAndUnlikePost = async (req: any, res: Response) => {
         { $pull: { likedPosts: postId } }
       );
 
-      return res.status(200).json({ message: "Post unliked successfully" });
+      const updatedLikes = currentPost.likes.filter(
+        (id) => id.toString() !== currentUserId.toString()
+      );
+
+      return res.status(200).json(updatedLikes);
     } else {
       currentPost.likes.push(currentUserId);
 
@@ -128,7 +137,9 @@ export const likeAndUnlikePost = async (req: any, res: Response) => {
       });
 
       await newNotification.save();
-      return res.status(200).json({ message: "Post liked successfully" });
+
+      const updatedLikes = currentPost.likes;
+      return res.status(200).json(updatedLikes);
     }
   } catch (error) {
     console.log("Error in likeAndUnlikePost", error);

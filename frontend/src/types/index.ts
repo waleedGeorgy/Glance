@@ -27,3 +27,12 @@ export interface Comment {
   by: User;
   createdAt: string;
 }
+
+export interface Notification {
+  _id: string;
+  from: User;
+  read: boolean;
+  to: string;
+  type: string;
+  createdAt: string;
+}

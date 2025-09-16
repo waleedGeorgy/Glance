@@ -28,7 +28,16 @@ const RightSidebar = () => {
 
     const { followUnfollow, isPending } = useFollow();
 
-    if (suggestedUsers?.length === 0) return <div className="md:w-64 w-0"></div>
+    if (suggestedUsers?.length === 0) {
+        return (
+            <div className='hidden lg:block ml-2'>
+                <div className='bg-secondary px-4 py-3 rounded-md sticky top-2'>
+                    <p className='mb-3 font-semibold'>Suggested users</p>
+                    <h3 className="font-light">There is no one to suggest 😯</h3>
+                </div>
+            </div>
+        )
+    }
 
     return (
         <div className='hidden lg:block ml-2'>
