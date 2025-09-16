@@ -65,6 +65,7 @@ export const deletePost = async (req: any, res: Response) => {
   }
 };
 
+// todo: add delete comment
 export const commentOnPost = async (req: any, res: Response) => {
   try {
     const { postId } = req.params;
@@ -87,7 +88,7 @@ export const commentOnPost = async (req: any, res: Response) => {
       path: "comments.by",
       select: "_id firstName lastName username profileImage",
     });
-
+    // todo: add comment notifications
     return res.status(200).json(populatedPost?.comments);
   } catch (error) {
     console.log("Error in commentOnPost", error);
@@ -130,13 +131,15 @@ export const likeAndUnlikePost = async (req: any, res: Response) => {
 
       await currentPost.save();
 
-      const newNotification = await Notification.create({
-        from: currentUserId,
-        to: currentPost.byUser,
-        type: "like",
-      });
+      if (currentUserId.toString() !== currentPost.byUser._id.toString()) {
+        const newNotification = await Notification.create({
+          from: currentUserId,
+          to: currentPost.byUser,
+          type: "like",
+        });
 
-      await newNotification.save();
+        await newNotification.save();
+      }
 
       const updatedLikes = currentPost.likes;
       return res.status(200).json(updatedLikes);
