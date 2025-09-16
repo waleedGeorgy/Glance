@@ -3,12 +3,14 @@ export interface User {
   username: string;
   firstName: string;
   lastName: string;
+  email: string;
   profileImage?: string;
   coverImage?: string;
   bio?: string;
   link?: string;
   following: string[];
   followers: string[];
+  createdAt: string | Date;
 }
 
 export interface Post {
@@ -18,14 +20,14 @@ export interface Post {
   image?: string;
   comments: Comment[];
   likes: string[];
-  createdAt: string;
+  createdAt: string | Date;
 }
 
 export interface Comment {
   _id: string;
   text: string;
   by: User;
-  createdAt: string;
+  createdAt: string | Date;
 }
 
 export interface Notification {
@@ -34,5 +36,5 @@ export interface Notification {
   read: boolean;
   to: string;
   type: string;
-  createdAt: string;
+  createdAt: string | Date;
 }

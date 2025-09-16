@@ -1,29 +1,12 @@
 import { Link } from "react-router";
 import RightSidebarSkeleton from "./skeletons/RightSidebarSkeleton";
 import { useQuery } from "@tanstack/react-query";
-import { createToast } from "./Toast";
 import type { User } from "../types";
 import useFollow from "../hooks/useFollow";
 
 const RightSidebar = () => {
-    const { data: suggestedUsers, isLoading } = useQuery({
-        queryKey: ["suggestedUsers"],
-        queryFn: async () => {
-            try {
-                const res = await fetch("http://localhost:8000/api/users/suggested", { credentials: "include" });
-                const data = await res.json();
-
-                if (!res.ok) {
-                    createToast("error", "Failed to fetch suggested users");
-                    throw new Error(data.error || "Something went wrong");
-                }
-
-                return data;
-            } catch (error) {
-                console.log(error);
-                throw error;
-            }
-        }
+    const { data: suggestedUsers, isLoading } = useQuery<User[]>({
+        queryKey: ["users/suggested"],
     });
 
     const { followUnfollow, isPending } = useFollow();

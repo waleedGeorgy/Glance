@@ -1,7 +1,13 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { UserCircle2, UserPlus2, LockKeyhole } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { createToast } from "./Toast";
+import type { User } from "../types";
+import { useNavigate } from "react-router";
 
-const EditProfileModal = () => {
+const EditProfileModal = ({ authUser }: { authUser: User }) => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         firstName: "",
         lastName: "",
@@ -13,9 +19,63 @@ const EditProfileModal = () => {
         currentPassword: "",
     });
 
+    const queryClient = useQueryClient();
+
+    const { mutate: updateUserInfo, isPending } = useMutation({
+        mutationFn: async () => {
+            try {
+                const res = await fetch("http://localhost:8000/api/users/update", {
+                    method: "POST",
+                    credentials: "include",
+                    body: JSON.stringify(formData),
+                    headers: {
+                        "Content-Type": "application/json"
+                    }
+                });
+                const data = await res.json();
+
+                if (!res.ok) throw new Error(data.error || "Something went wrong");
+
+                return data;
+            } catch (error) {
+                console.log(error);
+                throw error;
+            }
+        },
+        onSuccess: (data) => {
+            createToast("success", "Profile updated successfully");
+            if (data.username !== authUser.username) {
+                navigate(`/profile/${data.username}`)
+            }
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] }),
+                queryClient.invalidateQueries({ queryKey: [`users/profile/${authUser?.username}`] }),
+                queryClient.invalidateQueries({ queryKey: [`users/profile/${data.username}`] })
+            ]);
+        },
+        onError: (error) => {
+            createToast("error", error.message);
+        }
+    })
+
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
+
+    useEffect(() => {
+        if (authUser) {
+            setFormData({
+                firstName: authUser.firstName,
+                lastName: authUser.lastName,
+                username: authUser.username,
+                bio: authUser.bio as string,
+                link: authUser.link as string,
+                currentPassword: "",
+                newPassword: "",
+                email: authUser.email
+            })
+        }
+    }, [authUser])
 
     return (
         <>
@@ -37,7 +97,7 @@ const EditProfileModal = () => {
                         className='flex flex-col gap-6'
                         onSubmit={(e) => {
                             e.preventDefault();
-                            alert("Profile updated successfully");
+                            updateUserInfo()
                         }}
                     >
                         <div className='flex flex-col flex-wrap gap-2'>
@@ -118,7 +178,9 @@ const EditProfileModal = () => {
                                 />
                             </div>
                         </div>
-                        <button className='btn btn-primary btn-sm rounded-full w-2/3 mx-auto'>Update</button>
+                        <button className='btn btn-primary btn-sm rounded-full w-2/3 mx-auto' disabled={isPending}>
+                            {isPending ? (<span className="loading loading-spinner loading-sm" />) : (<span>Update</span>)}
+                        </button>
                     </form>
                 </div>
                 <form method='dialog' className='modal-backdrop'>

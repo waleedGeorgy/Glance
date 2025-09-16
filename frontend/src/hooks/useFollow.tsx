@@ -23,10 +23,9 @@ const useFollow = () => {
         },
         onSuccess: () => {
             Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["authUser"] }),
-                queryClient.invalidateQueries({ queryKey: ["suggestedUsers"] })
+                queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] }),
+                queryClient.invalidateQueries({ queryKey: ["users/suggested"] })
             ]);
-            createToast("success", "Followed a new user!")
         },
         onError: (error) => {
             createToast("error", error.message);

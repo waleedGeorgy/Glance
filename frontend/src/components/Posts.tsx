@@ -4,40 +4,31 @@ import { useQuery } from "@tanstack/react-query";
 import { useEffect } from "react";
 import type { Post } from "../types";
 
-const Posts = ({ feedTab }: { feedTab: string }) => {
+const Posts = ({ feedTab, username, userId }: { feedTab: string, username?: string | undefined, userId?: string | undefined }) => {
   const getPostsEndpoint = () => {
     switch (feedTab) {
       case "forYou":
-        return "http://localhost:8000/api/posts/all"
+        return "posts/all"
       case "following":
-        return "http://localhost:8000/api/posts/following"
+        return "posts/following"
+      case "userPosts":
+        return `posts/user/${username}`
+      case "liked":
+        return `posts/liked/${userId}`
       default:
-        return "http://localhost:8000/api/posts/all"
+        return "posts/all"
     }
   }
 
   const postsEndpoint = getPostsEndpoint();
 
-  const { data: posts, isLoading, refetch, isRefetching } = useQuery({
-    queryKey: ["posts"],
-    queryFn: async () => {
-      try {
-        const res = await fetch(postsEndpoint, { credentials: "include" });
-        const data = await res.json();
-
-        if (!res.ok) throw new Error(data.error || "Something went wrong");
-
-        return data;
-      } catch (error) {
-        console.log(error);
-        throw error;
-      }
-    }
+  const { data: posts, isLoading, refetch, isRefetching } = useQuery<Post[]>({
+    queryKey: [postsEndpoint]
   });
 
   useEffect(() => {
     refetch();
-  }, [feedTab, refetch]);
+  }, [feedTab, refetch, username, userId]);
 
   return (
     <>

@@ -8,7 +8,7 @@ import { createToast } from './Toast';
 const Comments = ({ post }: { post: Post }) => {
     const [comment, setComment] = useState("");
 
-    const { data: authUser } = useQuery<User>({ queryKey: ["authUser"] });
+    const { data: authUser } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
 
     const queryClient = useQueryClient();
 
@@ -34,7 +34,7 @@ const Comments = ({ post }: { post: Post }) => {
             }
         },
         onSuccess: (updatedComments) => {
-            queryClient.setQueryData(["posts"], (oldData: Post[]) => {
+            queryClient.setQueryData(["posts/all"], (oldData: Post[]) => {
                 return oldData.map((p) => {
                     if (p._id === post._id) {
                         return { ...p, comments: updatedComments }
@@ -84,21 +84,22 @@ const Comments = ({ post }: { post: Post }) => {
                         {post.comments.map((comment: Comment) => {
                             const isMyComment = authUser?._id === comment?.by._id;
                             return (
+                                // todo: fix comments profile pics
                                 <div className='space-y-3 border-b border-accent py-2' key={comment?._id}>
                                     <div className={`flex items-center gap-2 w-fit pr-2 rounded-full ${isMyComment ? ("bg-gradient-to-r from-sky-950 to bg-indigo-950") : ("bg-secondary")}`}>
                                         {comment?.by.profileImage ?
                                             (
-                                                <Link viewTransition to={`/profile/${comment?.by.username}`} className='hover:underline underline-offset-2'>
-                                                    <div className='size-7 rounded-full overflow-hidden'>
+                                                <Link viewTransition to={`/profile/${comment?.by.username}`}>
+                                                    <div className='size-8 rounded-full overflow-hidden'>
                                                         <img src={comment?.by.profileImage} alt={comment?.by.username} />
                                                     </div>
                                                 </Link>
                                             )
                                             :
                                             (
-                                                <Link viewTransition to={`/profile/${comment?.by.username}`} className='hover:underline underline-offset-2'>
+                                                <Link viewTransition to={`/profile/${comment?.by.username}`}>
                                                     <div className="avatar avatar-placeholder">
-                                                        <div className="bg-neutral text-neutral-content size-7 rounded-full">
+                                                        <div className="bg-neutral text-neutral-content size-8 rounded-full">
                                                             <span>{comment?.by.firstName[0]}</span>
                                                         </div>
                                                     </div>

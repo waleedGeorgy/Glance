@@ -22,7 +22,7 @@ const LeftSidebar = () => {
             }
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["authUser"] });
+            queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] });
             createToast("success", "Logged out successfully!");
         },
         onError: () => {
@@ -30,7 +30,7 @@ const LeftSidebar = () => {
         }
     });
 
-    const { data: user } = useQuery<User>({ queryKey: ["authUser"] });
+    const { data: user } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
 
     return (
         <div className='md:flex-[2_2_0] max-w-52'>
@@ -86,7 +86,7 @@ const LeftSidebar = () => {
                                 </div>
                                 <div className='flex justify-between items-center flex-1'>
                                     <div className='hidden md:block'>
-                                        <p className='font-bold text-sm truncate'>{user?.firstName} {user?.lastName}</p>
+                                        <p className='font-bold text-sm truncate max-w-20'>{user?.firstName} {user?.lastName}</p>
                                         <p className='opacity-60 text-xs'>@{user?.username}</p>
                                     </div>
                                 </div>

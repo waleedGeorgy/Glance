@@ -1,19 +1,19 @@
 const ProfileHeaderSkeleton = () => {
     return (
-        <div className='flex flex-col gap-2 w-full my-2 p-4'>
-            <div className='flex gap-2 items-center'>
-                <div className='flex flex-1 gap-1'>
-                    <div className='flex flex-col gap-1 w-full'>
-                        <div className='skeleton h-4 w-12 rounded-full'></div>
-                        <div className='skeleton h-4 w-16 rounded-full'></div>
-                        <div className='skeleton h-40 w-full relative'>
-                            <div className='skeleton h-20 w-20 rounded-full border absolute -bottom-10 left-3'></div>
-                        </div>
-                        <div className='skeleton h-6 mt-4 w-24 ml-auto rounded-full'></div>
-                        <div className='skeleton h-4 w-14 rounded-full mt-4'></div>
-                        <div className='skeleton h-4 w-20 rounded-full'></div>
-                        <div className='skeleton h-4 w-2/3 rounded-full'></div>
-                    </div>
+        <div className='w-full p-3'>
+            <div className='flex flex-col gap-2 w-full'>
+                <div className='skeleton h-64 w-full relative'>
+                    <div className='skeleton size-32 rounded-full border border-accent absolute top-45 left-5'></div>
+                </div>
+                <div className='skeleton h-6 mt-4 w-20 ml-auto rounded-full'></div>
+                <div className='skeleton h-7 ml-3 w-32 rounded-full mt-4'></div>
+                <div className='skeleton h-4 ml-3 w-20 rounded-full'></div>
+                <div className='skeleton h-4 ml-3 w-32 rounded-full'></div>
+                <div className='skeleton h-4 ml-3 w-48 rounded-full'></div>
+                <div className="flex flex-row items-center gap-2 ml-3">
+                    <div className='skeleton h-6 w-24 rounded-full'></div>
+                    <div className='skeleton h-6 w-24 rounded-full'></div>
+                    <div className='skeleton h-6 w-24 rounded-full'></div>
                 </div>
             </div>
         </div>

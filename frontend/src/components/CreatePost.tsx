@@ -42,7 +42,7 @@ const CreatePost = () => {
       setText("");
       setImage(null);
       createToast("success", "Post created successfully!");
-      queryClient.invalidateQueries({ queryKey: ["posts"] });
+      queryClient.invalidateQueries({ queryKey: ["posts/all"] });
     }
   });
 
@@ -99,7 +99,6 @@ const CreatePost = () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
-
 
   return (
     <div className=' bg-secondary'>

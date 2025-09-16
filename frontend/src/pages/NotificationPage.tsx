@@ -7,21 +7,8 @@ import { createToast } from "../components/Toast";
 const NotificationPage = () => {
     const queryClient = useQueryClient();
 
-    const { data: notifications, isLoading } = useQuery({
+    const { data: notifications, isLoading } = useQuery<Notification[]>({
         queryKey: ["notifications"],
-        queryFn: async () => {
-            try {
-                const res = await fetch("http://localhost:8000/api/notifications", { credentials: "include" });
-                const data = await res.json();
-
-                if (!res.ok) throw new Error(data.error || "Something went wrong");
-
-                return data;
-            } catch (error) {
-                console.log(error);
-                throw error
-            }
-        }
     });
 
     const { mutate: deleteNotifications, isPending: isDeletingNotifications } = useMutation({

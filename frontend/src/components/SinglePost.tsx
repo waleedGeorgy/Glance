@@ -7,7 +7,7 @@ import { createToast } from "./Toast";
 
 const SinglePost = ({ post }: { post: Post }) => {
     const postOwner = post?.byUser;
-    const { data: authUser } = useQuery<User>({ queryKey: ["authUser"] });
+    const { data: authUser } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
     const isMyPost = authUser?._id === post.byUser._id;
 
     const queryClient = useQueryClient();
@@ -30,7 +30,7 @@ const SinglePost = ({ post }: { post: Post }) => {
         },
         onSuccess: () => {
             createToast("success", "Post deleted successfully!");
-            queryClient.invalidateQueries({ queryKey: ["posts"] });
+            queryClient.invalidateQueries({ queryKey: ["posts/all"] });
         },
         onError: (error) => {
             createToast("error", error.message);
@@ -53,8 +53,9 @@ const SinglePost = ({ post }: { post: Post }) => {
                 throw error;
             }
         },
+        // todo: fix likes for other types of posts
         onSuccess: (updatedLikes) => {
-            queryClient.setQueryData(["posts"], (oldData: Post[]) => {
+            queryClient.setQueryData(["posts/all"], (oldData: Post[]) => {
                 return oldData.map((p) => {
                     if (p._id === post._id) {
                         return { ...p, likes: updatedLikes }
@@ -68,9 +69,9 @@ const SinglePost = ({ post }: { post: Post }) => {
         }
     });
 
-
     const isLiked = post.likes.includes(authUser?._id as string);
 
+    // todo: add the proper date for post
     const formattedDate = "1h";
 
     const handlePostDelete = () => {

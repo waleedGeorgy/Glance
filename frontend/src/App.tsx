@@ -8,7 +8,6 @@ import ErrorPage from "./pages/ErrorPage";
 import NotificationPage from "./pages/NotificationPage";
 import ProfilePage from "./pages/ProfilePage";
 import { useQuery } from "@tanstack/react-query";
-import { createToast } from "./components/Toast";
 
 function ProtectedRoute({ children, authUser }: { children: React.ReactNode, authUser: unknown }) {
   if (!authUser) {
@@ -26,22 +25,7 @@ function PublicOnlyRoute({ children, authUser }: { children: React.ReactNode, au
 
 function App() {
   const { data: authUser, isLoading } = useQuery({
-    queryKey: ["authUser"],
-    queryFn: async () => {
-      try {
-        const res = await fetch("http://localhost:8000/api/auth/checkAuth", { credentials: "include" });
-        const data = await res.json();
-        if (data.error) return null;
-
-        if (!res.ok) throw new Error(data.error || "Failed to create account");
-
-        return data;
-      } catch (error) {
-        console.error(error);
-        createToast("error", "Something went wrong");
-        return null;
-      }
-    },
+    queryKey: ["auth/checkAuth"],
     retry: false
   });
 
