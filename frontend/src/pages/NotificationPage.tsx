@@ -1,8 +1,9 @@
 import { Link } from "react-router";
-import { Settings2, UserPlus2, Heart, XCircle, Trash2, Calendar1, Clock1 } from "lucide-react"
+import { Settings2, UserPlus2, Heart, XCircle, Trash2, Calendar1, MessageCircle } from "lucide-react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { type Notification } from "../types";
 import { createToast } from "../components/Toast";
+import { formatDate } from "../utils/formatDate";
 
 const NotificationPage = () => {
     const queryClient = useQueryClient();
@@ -101,8 +102,9 @@ const NotificationPage = () => {
                 {notifications?.map((notification: Notification) => (
                     <div className='border-b border-accent' key={notification._id}>
                         <div className='flex flex-row items-center gap-3 p-4'>
-                            {notification.type === "follow" && <UserPlus2 className='size-6 text-sky-500' />}
+                            {notification.type === "follow" && <UserPlus2 className='size-6 text-emerald-500' />}
                             {notification.type === "like" && <Heart className='size-6 text-rose-500' />}
+                            {notification.type === "comment" && <MessageCircle className='size-6 text-sky-500' />}
                             <Link viewTransition to={`/profile/${notification.from.username}`} className="flex flex-row items-center gap-2 group">
                                 <div className='avatar'>
                                     {notification.from.profileImage ?
@@ -123,12 +125,15 @@ const NotificationPage = () => {
                                 </div>
                                 <div className='flex gap-1 items-center'>
                                     <span className='font-semibold text-primary group-hover:underline underline-offset-2'>@{notification.from.username}</span>{" "}
-                                    <span className="font-light">{notification.type === "follow" ? "followed you" : "liked your post"}</span>
+                                    <span className="font-light">
+                                        {notification.type === "follow" && "followed you"}
+                                        {notification.type === "like" && "liked you post"}
+                                        {notification.type === "comment" && "commented on your post"}
+                                    </span>
                                 </div>
                             </Link>
                             <span className="text-sm ml-auto opacity-50 font-semibold flex items-center gap-3">
-                                <p className="flex items-center gap-1"><Calendar1 className="size-3.5" /><span>{notification.createdAt.split("T")[0]}</span></p>
-                                <p className="flex items-center gap-0.5"><Clock1 className="size-3.5" /><span>{notification.createdAt.split("T")[1].split(".")[0]}</span></p>
+                                <p className="flex items-center gap-1"><Calendar1 className="size-3.5" /><span>{formatDate(notification.createdAt)}</span></p>
                             </span>
                             <p onClick={() => handleDeleteOneNotification(notification._id)} className="ml-auto cursor-pointer hover:scale-105">
                                 {isDeletingOneNotification ? (<span className="loading loading-spinner loading-sm" />) : (<XCircle className="size-5 text-red-400" />)}

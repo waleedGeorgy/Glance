@@ -2,7 +2,7 @@ import { Link } from 'react-router';
 import { Home, Bell, LogOut } from "lucide-react"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createToast } from './Toast';
-import { type User } from '../types';
+import { type Notification, type User } from '../types';
 
 const LeftSidebar = () => {
     const queryClient = useQueryClient();
@@ -32,6 +32,8 @@ const LeftSidebar = () => {
 
     const { data: user } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
 
+    const { data: notifications } = useQuery<Notification[]>({ queryKey: ["notifications"] });
+
     return (
         <div className='md:flex-[2_2_0] max-w-52'>
             <div className='sticky top-0 left-0 h-screen flex flex-col border-r border-accent w-20 md:w-full px-2'>
@@ -55,8 +57,10 @@ const LeftSidebar = () => {
                             to='/notifications'
                             className='flex gap-3 justify-center md:justify-start items-center hover:bg-accent transition-all rounded-full duration-300 p-3 cursor-pointer'
                         >
-                            <Bell className='size-5 text-primary' />
-                            <span className='hidden md:block'>Notifications</span>
+                            <Bell className={`size-5 text-primary ${(notifications && notifications?.length > 0) && ("animate-wiggle")}`} />
+                            <span className='hidden md:block'>Notifications{" "}
+                                {(notifications && notifications.length > 0) && <span>({notifications?.length})</span>}
+                            </span>
                         </Link>
                     </li>
                     {/* User profile button */}
@@ -86,7 +90,7 @@ const LeftSidebar = () => {
                                 </div>
                                 <div className='flex justify-between items-center flex-1'>
                                     <div className='hidden md:block'>
-                                        <p className='font-bold text-sm truncate max-w-20'>{user?.firstName} {user?.lastName}</p>
+                                        <p className='font-bold text-sm truncate max-w-[86px]'>{user?.firstName} {user?.lastName}</p>
                                         <p className='opacity-60 text-xs'>@{user?.username}</p>
                                     </div>
                                 </div>

@@ -80,7 +80,7 @@ const EditProfileModal = ({ authUser }: { authUser: User }) => {
     return (
         <>
             <button
-                className='btn btn-primary rounded-full btn-sm'
+                className='btn btn-primary rounded-full'
                 onClick={() => {
                     const modal = document.getElementById("edit_profile_modal");
                     if (modal instanceof HTMLDialogElement) {

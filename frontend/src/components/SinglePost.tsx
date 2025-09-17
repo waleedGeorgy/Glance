@@ -4,8 +4,9 @@ import Comments from "./Comments";
 import { type Post, type User } from "../types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createToast } from "./Toast";
+import { formatDate } from "../utils/formatDate";
 
-const SinglePost = ({ post }: { post: Post }) => {
+const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
     const postOwner = post?.byUser;
     const { data: authUser } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
     const isMyPost = authUser?._id === post.byUser._id;
@@ -30,7 +31,12 @@ const SinglePost = ({ post }: { post: Post }) => {
         },
         onSuccess: () => {
             createToast("success", "Post deleted successfully!");
-            queryClient.invalidateQueries({ queryKey: ["posts/all"] });
+            Promise.all([
+                queryClient.invalidateQueries({ queryKey: ["posts/all"] }),
+                queryClient.invalidateQueries({ queryKey: ["posts/following"] }),
+                queryClient.invalidateQueries({ queryKey: [`posts/liked/${authUser?._id}`] }),
+                queryClient.invalidateQueries({ queryKey: [`posts/user/${authUser?.username}`] }),
+            ]);
         },
         onError: (error) => {
             createToast("error", error.message);
@@ -53,9 +59,9 @@ const SinglePost = ({ post }: { post: Post }) => {
                 throw error;
             }
         },
-        // todo: fix likes for other types of posts
+
         onSuccess: (updatedLikes) => {
-            queryClient.setQueryData(["posts/all"], (oldData: Post[]) => {
+            queryClient.setQueryData([feedTab], (oldData: Post[]) => {
                 return oldData.map((p) => {
                     if (p._id === post._id) {
                         return { ...p, likes: updatedLikes }
@@ -71,8 +77,7 @@ const SinglePost = ({ post }: { post: Post }) => {
 
     const isLiked = post.likes.includes(authUser?._id as string);
 
-    // todo: add the proper date for post
-    const formattedDate = "1h";
+    const formattedDate = formatDate(post.createdAt);
 
     const handlePostDelete = () => {
         deletePost();
@@ -116,7 +121,7 @@ const SinglePost = ({ post }: { post: Post }) => {
                                     {postOwner.firstName} {postOwner.lastName}
                                 </Link>
                                 <span className="text-lg opacity-50">|</span>
-                                <Link className="hover:underline underline-offset-2 text-primary font-light text-sm" viewTransition to={`/profile/${postOwner.username}`}>@{postOwner.username}</Link>
+                                <Link className="hover:underline underline-offset-2 text-primary text-sm" viewTransition to={`/profile/${postOwner.username}`}>@{postOwner.username}</Link>
                                 <span className="text-lg opacity-50">|</span>
                                 <span className="flex text-sm flex-row gap-0.5 items-center"><Clock2 className="size-3.5" />{formattedDate}</span>
                             </div>
@@ -158,7 +163,8 @@ const SinglePost = ({ post }: { post: Post }) => {
                                     {post.likes.length}
                                 </span>
                             </div>
-                            <Comments post={post} />
+                            <Comments post={post} feedTab={feedTab} />
+                            {/* todo: implement reposting */}
                             <div className='flex gap-1 items-center group cursor-pointer'>
                                 <Repeat className='size-5 text-slate-500 group-hover:text-emerald-500 transition-all duration-300' />
                                 <span className='text-sm text-slate-500 group-hover:text-emerald-500 transition-all duration-300'>0</span>

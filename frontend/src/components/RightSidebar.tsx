@@ -23,9 +23,10 @@ const RightSidebar = () => {
     }
 
     return (
-        <div className='hidden lg:block ml-2'>
-            <div className='bg-secondary px-4 py-3 rounded-md sticky top-2'>
-                <p className='mb-3 font-semibold'>Suggested users</p>
+        <div className='hidden lg:block ml-1.5'>
+            <div className='bg-secondary px-4 py-3 rounded-b-lg sticky top-0'>
+                <p className='font-semibold text-lg'>Suggested users</p>
+                <div className="divider my-1" />
                 <div className='flex justify-center flex-col gap-4'>
                     {isLoading ?
                         (<RightSidebarSkeleton />)

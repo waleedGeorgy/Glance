@@ -4,7 +4,7 @@ import Posts from "../components/Posts";
 
 const HomePage = () => {
   const [feedTab, setFeedTab] = useState("forYou");
-
+  // todo: implement search functionality
   return (
     <>
       <div className='flex-[4_4_0] mr-auto border-r border-accent min-h-screen pb-2'>

@@ -65,7 +65,46 @@ export const deletePost = async (req: any, res: Response) => {
   }
 };
 
-// todo: add delete comment
+export const deleteComment = async (req: any, res: Response) => {
+  try {
+    const { postId, commentId } = req.params;
+    const currentUserId = req.user._id;
+
+    const currentPost = await Post.findById(postId);
+    if (!currentPost) {
+      return res.status(404).json({ error: "Post does not exist" });
+    }
+
+    const comment = currentPost.comments.id(commentId);
+    if (!comment) {
+      return res.status(404).json({ error: "Comment does not exist" });
+    }
+
+    const isCommentAuthor = comment.by.toString() === currentUserId.toString();
+    const isPostOwner =
+      currentPost.byUser.toString() === currentUserId.toString();
+
+    if (!isCommentAuthor && !isPostOwner) {
+      return res.status(403).json({
+        error: "You are not authorized to delete this comment",
+      });
+    }
+
+    currentPost.comments.pull(commentId);
+    await currentPost.save();
+
+    const populatedPost = await Post.findById(postId).populate({
+      path: "comments.by",
+      select: "_id firstName lastName username profileImage",
+    });
+
+    return res.status(200).json(populatedPost?.comments);
+  } catch (error) {
+    console.log("Error in deleteComment", error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
+};
+
 export const commentOnPost = async (req: any, res: Response) => {
   try {
     const { postId } = req.params;
@@ -88,7 +127,15 @@ export const commentOnPost = async (req: any, res: Response) => {
       path: "comments.by",
       select: "_id firstName lastName username profileImage",
     });
-    // todo: add comment notifications
+
+    const newNotification = await Notification.create({
+      from: currentUserId,
+      to: currentPost.byUser,
+      type: "comment",
+    });
+
+    await newNotification.save();
+
     return res.status(200).json(populatedPost?.comments);
   } catch (error) {
     console.log("Error in commentOnPost", error);

@@ -12,4 +12,15 @@
 }
 @theme {
   --font-roboto: "Roboto", sans-serif;
+
+  --animate-wiggle: wiggle 2s ease-in-out infinite;
+  @keyframes wiggle {
+    0%,
+    100% {
+      transform: rotate(-8deg);
+    }
+    50% {
+      transform: rotate(8deg);
+    }
+  }
 }

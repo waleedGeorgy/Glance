@@ -4,12 +4,10 @@ const PostsSkeleton = () => {
             {[...Array(4)].map((_, id) => (
                 <div className='flex flex-col gap-4 w-full p-4' key={id}>
                     <div className='flex gap-2 items-center'>
-                        <div className='skeleton size-7 rounded-full shrink-0'></div>
-                        <div className='flex flex-col gap-2'>
-                            <div className='skeleton h-2 w-12 rounded-full'></div>
-                            <div className='skeleton h-2 w-24 rounded-full'></div>
-                        </div>
+                        <div className='skeleton size-8 rounded-full shrink-0'></div>
+                        <div className='skeleton h-7 w-48 rounded-full'></div>
                     </div>
+                    <div className="skeleton h-5 w-72 rounded-full" />
                     <div className='skeleton h-40 w-full rounded'></div>
                 </div>
             ))}

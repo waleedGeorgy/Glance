@@ -22,8 +22,7 @@ const ProfilePage = () => {
     const { followUnfollow, isPending } = useFollow();
 
     const { data: authUser } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
-
-    const { data: posts } = useQuery<Post[]>({ queryKey: ["posts/all"] });
+    const { data: userPosts, isPending: isUserPostsLoading } = useQuery<Post[]>({ queryKey: [`posts/user/${authUser?.username}`] })
 
     const queryClient = useQueryClient();
 
@@ -33,7 +32,7 @@ const ProfilePage = () => {
         retry: 1
     });
 
-    const { mutate: updateProfileImages, isPending: isUpdatingProfileImages } = useMutation({
+    const { mutateAsync: updateProfileImages, isPending: isUpdatingProfileImages } = useMutation({
         mutationFn: async () => {
             try {
                 const res = await fetch("http://localhost:8000/api/users/update", {
@@ -101,7 +100,7 @@ const ProfilePage = () => {
                                 <div className="group">
                                     <img
                                         src={coverImage || user?.coverImage || "/no_image.jpg"}
-                                        className='h-64 w-full object-cover p-3'
+                                        className='h-64 w-full object-cover p-1'
                                         alt='cover image'
                                     />
                                     {isMyProfile && (
@@ -162,7 +161,7 @@ const ProfilePage = () => {
                                 {isMyProfile && <EditProfileModal authUser={authUser as User} />}
                                 {!isMyProfile && (
                                     <button
-                                        className='btn btn-primary btn-sm rounded-full' disabled={isPending}
+                                        className='btn btn-primary rounded-full' disabled={isPending}
                                         onClick={() => followUnfollow(user._id)}
                                     >
                                         {isPending && <span className="loading loading-spinner loading-sm" />}
@@ -172,8 +171,12 @@ const ProfilePage = () => {
                                 )}
                                 {(coverImage || profileImage) && (
                                     <button
-                                        className='btn btn-primary rounded-full btn-sm ml-2'
-                                        onClick={() => updateProfileImages()}
+                                        className='btn btn-primary rounded-full ml-2'
+                                        onClick={async () => {
+                                            await updateProfileImages();
+                                            setProfileImg(null);
+                                            setCoverImg(null)
+                                        }}
                                         disabled={isUpdatingProfileImages}
                                     >
                                         {isUpdatingProfileImages ? (<span className="loading loading-spinner loading-sm" />) : (<span>Update</span>)}
@@ -183,7 +186,7 @@ const ProfilePage = () => {
                             {/* Profile info */}
                             <div className='flex flex-col justify-center gap-2 mt-4 px-6'>
                                 <div className='flex flex-col gap-1 justify-center'>
-                                    <span className='font-semibold text-3xl'>{user?.firstName} {user?.lastName}</span>
+                                    <span className='font-semibold text-3xl tracking-wide'>{user?.firstName} {user?.lastName}</span>
                                     <span className='text-primary'>@{user?.username}</span>
                                     <span>{user?.bio}</span>
                                     <div className="flex flex-row gap-4 items-center">
@@ -204,14 +207,15 @@ const ProfilePage = () => {
                                         )}
                                     </div>
                                 </div>
-                                <div className='flex items-center gap-2'>
-                                    <div className='flex gap-1 items-center bg-emerald-500 px-3 py-1 rounded-2xl text-secondary'>
-                                        <span className='font-bold text-sm'>{user?.following.length}</span>
-                                        <span className='text-sm font-semibold'>Following</span>
+                                <div className='flex items-center gap-2 mt-1'>
+                                    {/* todo: implement showing followers and following users */}
+                                    <div className='flex gap-1 items-center bg-emerald-500 px-2 py-1 rounded-3xl text-secondary font-semibold text-sm'>
+                                        <span>{user?.following.length}</span>
+                                        <span>Following</span>
                                     </div>
-                                    <div className='flex gap-1 items-center bg-indigo-500 px-3 py-1 rounded-2xl text-secondary'>
-                                        <span className='font-bold text-sm'>{user?.followers.length}</span>
-                                        <span className='text-sm font-semibold'>Followers</span>
+                                    <div className='flex gap-1 items-center bg-indigo-500 px-2 py-1 rounded-3xl text-secondary font-semibold text-sm'>
+                                        <span>{user?.followers.length}</span>
+                                        <span>Followers</span>
                                     </div>
                                     <div className='flex gap-1 items-center ml-1'>
                                         <Calendar1 className='size-4 opacity-70' />
@@ -220,14 +224,16 @@ const ProfilePage = () => {
                                 </div>
                             </div>
                             {/* Posts and likes bar */}
-                            <div className='flex w-full border-b border-accent mt-5'>
+                            <div className='flex w-full border-b border-accent mt-8'>
                                 <div
-                                    className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer'
+                                    className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer truncate'
                                     onClick={() => setFeedTab("userPosts")}
                                 >
-                                    Posts {posts && (`(${posts?.length})`)}
+                                    <span className="text-primary font-semibold mr-1">{`${user?.username}'s`}</span> Posts{" "}
+                                    {isUserPostsLoading && (<span className="loading loading-ring loading-sm ml-0.5" />)}
+                                    {userPosts && !isUserPostsLoading && (`(${userPosts?.length})`)}
                                     {feedTab === "userPosts" && (
-                                        <div className='absolute bottom-0 w-10 h-1 rounded-full bg-primary' />
+                                        <div className='absolute bottom-0 w-16 h-1 rounded-full bg-primary' />
                                     )}
                                 </div>
                                 <div
@@ -236,7 +242,7 @@ const ProfilePage = () => {
                                 >
                                     Liked posts
                                     {feedTab === "liked" && (
-                                        <div className='absolute bottom-0 w-10 h-1 rounded-full bg-primary' />
+                                        <div className='absolute bottom-0 w-16 h-1 rounded-full bg-primary' />
                                     )}
                                 </div>
                             </div>
