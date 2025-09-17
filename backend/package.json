@@ -5,7 +5,7 @@
   "main": "src/index.ts",
   "scripts": {
     "dev": "nodemon src/index.ts",
-    "start": "ts-node src/index.ts"
+    "start": "pnpm ts-node src/index.ts"
   },
   "type": "module",
   "keywords": [],

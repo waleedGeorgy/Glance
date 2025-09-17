@@ -99,7 +99,7 @@ const ProfilePage = () => {
                             <div className='relative'>
                                 <div className="group">
                                     <img
-                                        src={coverImage || user?.coverImage || "/no_image.jpg"}
+                                        src={coverImage || user?.coverImage || "../assets/no_image.jpg"}
                                         className='h-64 w-full object-cover p-1'
                                         alt='cover image'
                                     />
