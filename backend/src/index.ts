@@ -12,10 +12,9 @@ import { connectDb } from "./lib/mongodb.ts";
 dotenv.config();
 
 const SERVER_PORT = process.env.SERVER_PORT;
+const __dirname = path.resolve();
 
 const app = express();
-
-const __dirname = path.resolve();
 
 app.use(express.json({ limit: "3mb" }));
 app.use(express.urlencoded({ extended: true }));

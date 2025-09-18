@@ -24,7 +24,7 @@ const EditProfileModal = ({ authUser }: { authUser: User }) => {
     const { mutate: updateUserInfo, isPending } = useMutation({
         mutationFn: async () => {
             try {
-                const res = await fetch("http://localhost:8000/api/users/update", {
+                const res = await fetch("/api/users/update", {
                     method: "POST",
                     credentials: "include",
                     body: JSON.stringify(formData),

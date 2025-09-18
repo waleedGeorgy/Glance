@@ -20,7 +20,7 @@ const LoginPage = () => {
     const { mutate, error, isPending, isError } = useMutation({
         mutationFn: async ({ username, password }: formDataProps) => {
             try {
-                const res = await fetch("http://localhost:8000/api/auth/login", {
+                const res = await fetch("/api/auth/login", {
                     method: "POST",
                     credentials: 'include',
                     body: JSON.stringify({ username, password }),

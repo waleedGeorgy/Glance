@@ -16,7 +16,7 @@ const Comments = ({ post, feedTab }: { post: Post, feedTab: string }) => {
     const { mutate: addComment, isPending: isCommenting } = useMutation({
         mutationFn: async () => {
             try {
-                const res = await fetch(`http://localhost:8000/api/posts/comment/${post._id}`, {
+                const res = await fetch(`/api/posts/comment/${post._id}`, {
                     method: "POST",
                     credentials: "include",
                     headers: {
@@ -54,7 +54,7 @@ const Comments = ({ post, feedTab }: { post: Post, feedTab: string }) => {
     const { mutate: deleteComment, isPending: isDeletingComment } = useMutation({
         mutationFn: async (commentId: string) => {
             try {
-                const res = await fetch(`http://localhost:8000/api/posts/${post._id}/${commentId}`, {
+                const res = await fetch(`/api/posts/${post._id}/${commentId}`, {
                     method: "DELETE",
                     credentials: "include",
                 });

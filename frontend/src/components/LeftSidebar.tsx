@@ -10,7 +10,7 @@ const LeftSidebar = () => {
     const { mutate, isPending } = useMutation({
         mutationFn: async () => {
             try {
-                const res = await fetch("http://localhost:8000/api/auth/logout", {
+                const res = await fetch("/api/auth/logout", {
                     method: "POST", credentials: 'include'
                 });
                 const data = await res.json();

@@ -26,7 +26,7 @@ const SignupPage = () => {
     const { mutate, isPending, isError, error } = useMutation({
         mutationFn: async ({ email, username, firstName, lastName, password }: formDataProps) => {
             try {
-                const res = await fetch("http://localhost:8000/api/auth/signup", {
+                const res = await fetch("/api/auth/signup", {
                     method: "POST",
                     credentials: 'include',
                     body: JSON.stringify({ email, username, firstName, lastName, password }),

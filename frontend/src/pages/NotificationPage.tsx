@@ -15,7 +15,7 @@ const NotificationPage = () => {
     const { mutate: deleteNotifications, isPending: isDeletingNotifications } = useMutation({
         mutationFn: async () => {
             try {
-                const res = await fetch("http://localhost:8000/api/notifications", {
+                const res = await fetch("/api/notifications", {
                     method: "DELETE",
                     credentials: "include"
                 });
@@ -41,7 +41,7 @@ const NotificationPage = () => {
     const { mutate: deleteOneNotification, isPending: isDeletingOneNotification } = useMutation({
         mutationFn: async (notificationId: string) => {
             try {
-                const res = await fetch(`http://localhost:8000/api/notifications/${notificationId}`, {
+                const res = await fetch(`/api/notifications/${notificationId}`, {
                     method: "DELETE",
                     credentials: "include"
                 });

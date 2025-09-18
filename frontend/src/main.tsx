@@ -8,14 +8,14 @@ const queryClient = new QueryClient({
     queries: {
       queryFn: async ({ queryKey }) => {
         try {
-          const res = await fetch(`http://localhost:8000/api/${queryKey[0]}`, { credentials: "include" });
+          const res = await fetch(`/api/${queryKey[0]}`, { credentials: "include" });
           const data = await res.json();
 
           if (!res.ok) throw new Error(data.error || "Something went wrong");
 
           return data;
         } catch (error) {
-          console.error(error);
+          console.log(error)
           return null;
         }
       },

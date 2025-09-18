@@ -16,7 +16,7 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
     const { mutate: deletePost, isPending: isDeleting } = useMutation({
         mutationFn: async () => {
             try {
-                const res = await fetch(`http://localhost:8000/api/posts/${post._id}`, {
+                const res = await fetch(`/api/posts/${post._id}`, {
                     method: "DELETE", credentials: "include"
                 });
                 const data = await res.json();
@@ -46,7 +46,7 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
     const { mutate: likeAndUnlikePost, isPending: isLiking } = useMutation({
         mutationFn: async () => {
             try {
-                const res = await fetch(`http://localhost:8000/api/posts/like/${post._id}`, {
+                const res = await fetch(`/api/posts/like/${post._id}`, {
                     method: "POST", credentials: "include"
                 });
                 const data = await res.json();

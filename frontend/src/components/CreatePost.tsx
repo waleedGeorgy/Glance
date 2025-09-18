@@ -17,7 +17,7 @@ const CreatePost = () => {
   const { mutate: createPost, isPending } = useMutation({
     mutationFn: async ({ text, image }: { text: string, image: string | null }) => {
       try {
-        const res = await fetch("http://localhost:8000/api/posts/create", {
+        const res = await fetch("/api/posts/create", {
           method: "POST",
           credentials: "include",
           body: JSON.stringify({ text, image }),
