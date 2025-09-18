@@ -151,13 +151,13 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                     <div className='flex items-center'>
                         <div className='flex gap-4 items-center w-full justify-around'>
                             <div className='flex gap-1 items-center group cursor-pointer' onClick={handlePostLike}>
-                                {isLiking && (<span className="loading loading-spinner loading-sm" />)}
+                                {isLiking && (<Heart className='size-5 cursor-pointer text-rose-500 fill-rose-500' />)}
                                 {(!isLiked && !isLiking) && (
                                     <Heart className='size-5 cursor-pointer  bg text-slate-500 group-hover:text-rose-500 transition-all duration-300' />
                                 )}
                                 {isLiked && !isLiking && <Heart className='size-5 cursor-pointer text-rose-500 fill-rose-500' />}
                                 <span
-                                    className={`text-sm transition-all duration-300 group-hover:text-rose-500 ${isLiked ? "text-rose-500 " : "text-slate-500"
+                                    className={`text-sm transition-all duration-300 group-hover:text-rose-500 ${isLiked || isLiking ? "text-rose-500 " : "text-slate-500"
                                         }`}
                                 >
                                     {post.likes.length}
