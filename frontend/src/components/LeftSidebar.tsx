@@ -3,6 +3,7 @@ import { Home, Bell, LogOut } from "lucide-react"
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { createToast } from './Toast';
 import { type Notification, type User } from '../types';
+import GlanceLogo from "../../src/assets/logo.png";
 
 const LeftSidebar = () => {
     const queryClient = useQueryClient();
@@ -36,16 +37,17 @@ const LeftSidebar = () => {
 
     return (
         <div className='md:flex-[2_2_0] max-w-52'>
-            <div className='sticky top-0 left-0 h-screen flex flex-col border-r border-accent w-20 md:w-full px-2'>
-                <Link viewTransition to='/' className='flex justify-center md:justify-start'>
-                    <h1>Glance Logo</h1>
+            <div className='sticky top-0 left-0 h-screen flex flex-col border-r border-accent w-20 md:w-full'>
+                <Link viewTransition to='/' className='flex items-center gap-1 justify-center md:justify-start pt-3 px-2 group w-fit'>
+                    <img src={GlanceLogo} alt='Logo of glance' className='w-9' />
+                    <h1 className='text-3xl hidden md:inline-block font-light group-hover:text-white transition-colors duration-300'>lance</h1>
                 </Link>
                 <ul className='flex flex-col mt-6'>
                     <li className="text-center md:text-left">
                         <Link
                             viewTransition
                             to='/'
-                            className='flex gap-3 items-center justify-center md:justify-start hover:bg-accent transition-all rounded-full duration-300 p-3 cursor-pointer'
+                            className='flex gap-3 items-center justify-center md:justify-start hover:bg-accent transition-all rounded-full duration-300 py-3 px-2 cursor-pointer'
                         >
                             <Home className='size-5 text-primary' />
                             <span className='hidden md:block'>Home</span>
@@ -55,7 +57,7 @@ const LeftSidebar = () => {
                         <Link
                             viewTransition
                             to='/notifications'
-                            className='flex gap-3 justify-center md:justify-start items-center hover:bg-accent transition-all rounded-full duration-300 p-3 cursor-pointer'
+                            className='flex gap-3 justify-center md:justify-start items-center hover:bg-accent transition-all rounded-full duration-300 py-3 px-2 cursor-pointer'
                         >
                             <Bell className={`size-5 text-primary ${(notifications && notifications?.length > 0) && ("animate-wiggle")}`} />
                             <span className='hidden md:block'>Notifications{" "}
@@ -69,7 +71,7 @@ const LeftSidebar = () => {
                             <Link
                                 viewTransition
                                 to={`/profile/${user?.username}`}
-                                className='flex gap-2 items-start py-2 px-3'
+                                className='flex gap-2 items-start p-2'
                             >
                                 <div className='avatar'>
                                     {user?.profileImage ?
@@ -82,7 +84,7 @@ const LeftSidebar = () => {
                                         (
                                             <div className="avatar avatar-placeholder">
                                                 <div className="bg-neutral text-neutral-content size-9 rounded-full border-2 border-primary">
-                                                    <span className='font-semibold'>{user?.firstName[0]}</span>
+                                                    <span>{user?.firstName[0]}</span>
                                                 </div>
                                             </div>
                                         )
@@ -90,7 +92,7 @@ const LeftSidebar = () => {
                                 </div>
                                 <div className='flex justify-between items-center flex-1'>
                                     <div className='hidden md:block'>
-                                        <p className='font-bold text-sm truncate max-w-[86px]'>{user?.firstName} {user?.lastName}</p>
+                                        <p className='font-semibold text-sm truncate max-w-24'>{user?.firstName} {user?.lastName}</p>
                                         <p className='opacity-60 text-xs'>@{user?.username}</p>
                                     </div>
                                 </div>
