@@ -1,8 +1,8 @@
+import { type Response } from "express";
 import bcrypt from "bcryptjs";
 import { Notification } from "../models/notification.model.ts";
 import { User } from "../models/user.model.ts";
 import cloudinary from "../lib/cloudinary.ts";
-import { type Response } from "express";
 
 export const getUserProfile = async (req: any, res: Response) => {
   try {

@@ -1,6 +1,6 @@
 import { Link } from "react-router";
-import RightSidebarSkeleton from "./skeletons/RightSidebarSkeleton";
 import { useQuery } from "@tanstack/react-query";
+import RightSidebarSkeleton from "./skeletons/RightSidebarSkeleton";
 import type { User } from "../types";
 import useFollow from "../hooks/useFollow";
 

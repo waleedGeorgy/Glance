@@ -1,8 +1,8 @@
-import { Post } from "./../models/post.model.ts";
-import cloudinary from "../lib/cloudinary.ts";
-import { User } from "../models/user.model.ts";
-import { Notification } from "../models/notification.model.ts";
 import { type Response } from "express";
+import { User } from "../models/user.model.ts";
+import { Post } from "./../models/post.model.ts";
+import { Notification } from "../models/notification.model.ts";
+import cloudinary from "../lib/cloudinary.ts";
 
 export const createNewPost = async (req: any, res: Response) => {
   try {

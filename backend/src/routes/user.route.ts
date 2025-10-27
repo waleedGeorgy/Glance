@@ -1,11 +1,11 @@
 import express from "express";
-import { protectedRoute } from "../middleware/protectedRoute.ts";
 import {
   followAndUnfollowUser,
   getSuggestedUsers,
   getUserProfile,
   updateUserProfile,
 } from "../controllers/user.controller.ts";
+import { protectedRoute } from "../middleware/protectedRoute.ts";
 
 const router = express.Router();
 

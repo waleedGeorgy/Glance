@@ -1,7 +1,7 @@
+import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 import SinglePost from "./SinglePost";
 import PostsSkeleton from "./skeletons/PostsSkeleton";
-import { useQuery } from "@tanstack/react-query";
-import { useEffect } from "react";
 import type { Post } from "../types";
 
 const Posts = ({ feedTab, username, userId }: { feedTab: string, username?: string | undefined, userId?: string | undefined }) => {

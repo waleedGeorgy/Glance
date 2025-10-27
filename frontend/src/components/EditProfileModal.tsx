@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router";
 import { UserCircle2, UserPlus2, LockKeyhole } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createToast } from "./Toast";
 import type { User } from "../types";
-import { useNavigate } from "react-router";
 
 const EditProfileModal = ({ authUser }: { authUser: User }) => {
     const navigate = useNavigate();

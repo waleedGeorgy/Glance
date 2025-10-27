@@ -1,5 +1,4 @@
 import express from "express";
-import { protectedRoute } from "../middleware/protectedRoute.ts";
 import {
   commentOnPost,
   createNewPost,
@@ -11,6 +10,7 @@ import {
   getUserPosts,
   likeAndUnlikePost,
 } from "../controllers/post.controller.ts";
+import { protectedRoute } from "../middleware/protectedRoute.ts";
 
 const router = express.Router();
 

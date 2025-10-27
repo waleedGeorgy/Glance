@@ -1,6 +1,6 @@
 import { Link } from "react-router";
-import { Settings2, UserPlus2, Heart, XCircle, Trash2, Calendar1, MessageCircle } from "lucide-react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { Settings2, UserPlus2, Heart, XCircle, Trash2, Calendar1, MessageCircle } from "lucide-react"
 import { type Notification } from "../types";
 import { createToast } from "../components/Toast";
 import { formatDate } from "../utils/formatDate";

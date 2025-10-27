@@ -1,13 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Edit, Link2, Calendar1, Camera } from "lucide-react"
 import ProfileHeaderSkeleton from "../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "../components/EditProfileModal";
 import Posts from "../components/Posts";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { createToast } from "../components/Toast";
 import { type Post, type User } from "../types";
 import useFollow from "../hooks/useFollow";
-import { createToast } from "../components/Toast";
 
 const ProfilePage = () => {
     const [coverImage, setCoverImg] = useState<string | null>(null);

@@ -1,9 +1,9 @@
 import { Link } from "react-router";
 import { Trash2, Heart, Repeat, Clock2 } from "lucide-react"
-import Comments from "./Comments";
-import { type Post, type User } from "../types";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createToast } from "./Toast";
+import Comments from "./Comments";
+import { type Post, type User } from "../types";
 import { formatDate } from "../utils/formatDate";
 
 const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
@@ -164,7 +164,7 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                                 </span>
                             </div>
                             <Comments post={post} feedTab={feedTab} />
-                            {/* todo: implement reposting */}
+                            {/* TODO: implement reposting */}
                             <div className='flex gap-1 items-center group cursor-pointer'>
                                 <Repeat className='size-5 text-slate-500 group-hover:text-emerald-500 transition-all duration-300' />
                                 <span className='text-sm text-slate-500 group-hover:text-emerald-500 transition-all duration-300'>0</span>

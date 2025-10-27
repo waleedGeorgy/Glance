@@ -1,7 +1,7 @@
-import jwt, { type JwtPayload } from "jsonwebtoken";
-import { User } from "../models/user.model.ts";
-import { config } from "dotenv";
 import { type NextFunction, type Response } from "express";
+import jwt, { type JwtPayload } from "jsonwebtoken";
+import { config } from "dotenv";
+import { User } from "../models/user.model.ts";
 
 config();
 
