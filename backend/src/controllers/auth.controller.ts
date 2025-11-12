@@ -48,7 +48,7 @@ export const signup = async (req: any, res: Response) => {
     });
 
     if (newUser) {
-      generateTokenSetCookie(newUser._id, res);
+      generateTokenSetCookie(newUser._id.toString(), res);
 
       await newUser.save();
 
@@ -82,7 +82,7 @@ export const login = async (req: any, res: Response) => {
     if (!isPasswordMatching || user?.username !== username) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
-    generateTokenSetCookie(user?._id, res);
+    generateTokenSetCookie(user?._id.toString() as string, res);
     return res.status(201).json(user);
   } catch (error) {
     console.log("Error in login controller" + error);
