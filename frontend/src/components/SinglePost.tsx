@@ -59,7 +59,6 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                 throw error;
             }
         },
-
         onSuccess: (updatedLikes) => {
             queryClient.setQueryData([feedTab], (oldData: Post[]) => {
                 return oldData.map((p) => {
@@ -79,15 +78,6 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
 
     const formattedDate = formatDate(post.createdAt);
 
-    const handlePostDelete = () => {
-        deletePost();
-    };
-
-    const handlePostLike = () => {
-        if (isLiking) return;
-        likeAndUnlikePost();
-    };
-
     return (
         <>
             <div className='flex gap-3 px-4 py-3 border-b border-secondary'>
@@ -97,23 +87,19 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                         <div className={`flex flex-row items-center gap-2 ${isMyPost ? ("bg-gradient-to-r from-sky-950 to bg-indigo-950") : ("bg-secondary")} w-fit pr-2 rounded-full`}>
                             <div className='avatar'>
                                 {postOwner?.profileImage ?
-                                    (
-                                        <Link viewTransition to={`/profile/${postOwner.username}`}>
-                                            <div className='size-8 rounded-full overflow-hidden'>
-                                                <img src={postOwner?.profileImage} alt={postOwner.username} />
-                                            </div>
-                                        </Link>
-                                    )
+                                    <Link viewTransition to={`/profile/${postOwner.username}`}>
+                                        <div className='size-8 rounded-full overflow-hidden'>
+                                            <img src={postOwner?.profileImage} alt={postOwner.username} />
+                                        </div>
+                                    </Link>
                                     :
-                                    (
-                                        <Link viewTransition to={`/profile/${postOwner.username}`}>
-                                            <div className="avatar avatar-placeholder">
-                                                <div className="bg-neutral text-neutral-content size-8 rounded-full">
-                                                    <span>{postOwner.firstName[0]}</span>
-                                                </div>
+                                    <Link viewTransition to={`/profile/${postOwner.username}`}>
+                                        <div className="avatar avatar-placeholder">
+                                            <div className="bg-neutral text-neutral-content size-8 rounded-full">
+                                                <span>{postOwner.firstName[0]}</span>
                                             </div>
-                                        </Link>
-                                    )
+                                        </div>
+                                    </Link>
                                 }
                             </div>
                             <div className='flex gap-2 items-center'>
@@ -121,17 +107,24 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                                     {postOwner.firstName} {postOwner.lastName}
                                 </Link>
                                 <span className="text-lg opacity-50">|</span>
-                                <Link className="hover:underline underline-offset-2 text-primary text-sm" viewTransition to={`/profile/${postOwner.username}`}>@{postOwner.username}</Link>
+                                <Link className="hover:underline underline-offset-2 text-primary text-sm" viewTransition to={`/profile/${postOwner.username}`}>
+                                    @{postOwner.username}
+                                </Link>
                                 <span className="text-lg opacity-50">|</span>
-                                <span className="flex text-sm flex-row gap-0.5 items-center"><Clock2 className="size-3.5" />{formattedDate}</span>
+                                <span className="flex text-sm flex-row gap-0.5 items-center"><Clock2 className="size-3.5" />
+                                    {formattedDate}
+                                </span>
                             </div>
                         </div>
                         {isMyPost && (
                             <span className='ml-auto'>
                                 {isDeleting ?
-                                    (<span className="loading loading-spinner loading-sm" />)
+                                    <span className="loading loading-spinner loading-sm" />
                                     :
-                                    (<Trash2 className='size-5 cursor-pointer hover:text-red-400 transition-all duration-200 ' onClick={handlePostDelete} />)
+                                    <Trash2
+                                        className='size-5 cursor-pointer hover:text-red-400 transition-all duration-200 '
+                                        onClick={() => deletePost()}
+                                    />
                                 }
                             </span>
                         )}
@@ -150,7 +143,13 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                     {/* Post controls */}
                     <div className='flex items-center'>
                         <div className='flex gap-4 items-center w-full justify-around'>
-                            <div className='flex gap-1 items-center group cursor-pointer' onClick={handlePostLike}>
+                            <div
+                                className='flex gap-1 items-center group cursor-pointer'
+                                onClick={() => {
+                                    if (isLiking) return;
+                                    likeAndUnlikePost();
+                                }}
+                            >
                                 {isLiking && (<Heart className='size-5 cursor-pointer text-rose-500 fill-rose-500' />)}
                                 {(!isLiked && !isLiking) && (
                                     <Heart className='size-5 cursor-pointer  bg text-slate-500 group-hover:text-rose-500 transition-all duration-300' />
@@ -164,7 +163,7 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                                 </span>
                             </div>
                             <Comments post={post} feedTab={feedTab} />
-                            {/* TODO: implement reposting */}
+                            {/* TODO: implement re-posting */}
                             <div className='flex gap-1 items-center group cursor-pointer'>
                                 <Repeat className='size-5 text-slate-500 group-hover:text-emerald-500 transition-all duration-300' />
                                 <span className='text-sm text-slate-500 group-hover:text-emerald-500 transition-all duration-300'>0</span>
@@ -172,7 +171,7 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                         </div>
                     </div>
                 </div>
-            </div>
+            </div >
         </>
     );
 };

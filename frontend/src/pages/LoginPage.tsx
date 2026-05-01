@@ -3,7 +3,7 @@ import { Link } from "react-router";
 import { User2, LockKeyhole } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createToast } from "../components/Toast";
-import GlanceLogo from "../../src/assets/logo.png";
+import GlanceLogo from "../assets/logo.png";
 
 interface formDataProps {
     username: string,
@@ -41,12 +41,7 @@ const LoginPage = () => {
             queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] });
             createToast("success", "Logged in successfully! Redirecting...");
         }
-    })
-
-    const handleLogin = (e: FormEvent) => {
-        e.preventDefault();
-        mutate(formData);
-    };
+    });
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -64,7 +59,12 @@ const LoginPage = () => {
                     <h1 className='text-5xl'>lance</h1>
                 </div>
                 <h3 className='text-2xl text-center'>Let's Continue!</h3>
-                <form className='flex gap-4 flex-col w-1/2' onSubmit={handleLogin}>
+                <form
+                    className='flex gap-4 flex-col w-1/2'
+                    onSubmit={(e: FormEvent) => {
+                        e.preventDefault();
+                        mutate(formData);
+                    }}>
                     <label className='input rounded-lg w-full'>
                         <User2 className="size-5 opacity-50" />
                         <input

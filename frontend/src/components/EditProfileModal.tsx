@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ChangeEvent } from "react";
 import { useNavigate } from "react-router";
 import { UserCircle2, UserPlus2, LockKeyhole } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createToast } from "./Toast";
 import type { User } from "../types";
 
-const EditProfileModal = ({ authUser }: { authUser: User }) => {
+const EditProfileModal = ({ authUser }: { authUser?: User }) => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -44,7 +44,7 @@ const EditProfileModal = ({ authUser }: { authUser: User }) => {
         },
         onSuccess: (data) => {
             createToast("success", "Profile updated successfully");
-            if (data.username !== authUser.username) {
+            if (data.username !== authUser?.username) {
                 navigate(`/profile/${data.username}`)
             }
             Promise.all([
@@ -58,9 +58,8 @@ const EditProfileModal = ({ authUser }: { authUser: User }) => {
         }
     })
 
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement> | ChangeEvent<HTMLTextAreaElement>) =>
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
 
     useEffect(() => {
         if (authUser) {
@@ -68,8 +67,8 @@ const EditProfileModal = ({ authUser }: { authUser: User }) => {
                 firstName: authUser.firstName,
                 lastName: authUser.lastName,
                 username: authUser.username,
-                bio: authUser.bio as string,
-                link: authUser.link as string,
+                bio: authUser.bio || "",
+                link: authUser.link || "",
                 currentPassword: "",
                 newPassword: "",
                 email: authUser.email

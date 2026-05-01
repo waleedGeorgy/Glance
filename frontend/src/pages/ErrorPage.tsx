@@ -40,13 +40,14 @@ export default function ErrorPage() {
                 <span className="text-primary font-bold">{getErrorStatus()}</span> - {getErrorMessage()}
             </p>
             <div className="flex flex-row items-center gap-3 mt-2">
-                <button onClick={() => { void navigate(-1) }} className="cursor-pointer btn btn-primary rounded-md">
+                <button
+                    onClick={() => { void navigate(-1) }}
+                    className="cursor-pointer btn btn-primary rounded-md"
+                >
                     Return
                 </button>
                 <button className="cursor-pointer btn btn-accent rounded-md">
-                    <Link viewTransition to="/">
-                        Home
-                    </Link>
+                    <Link viewTransition to="/">Home</Link>
                 </button>
             </div>
         </div>

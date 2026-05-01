@@ -1,36 +1,38 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { useParams } from "react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Edit, Link2, Calendar1, Camera } from "lucide-react"
-import ProfileHeaderSkeleton from "../components/skeletons/ProfileHeaderSkeleton";
 import EditProfileModal from "../components/EditProfileModal";
+import ProfileHeaderSkeleton from "../components/skeletons/ProfileHeaderSkeleton";
 import Posts from "../components/Posts";
 import { createToast } from "../components/Toast";
 import { type Post, type User } from "../types";
 import useFollow from "../hooks/useFollow";
-import NoCoverPlaceholder from "../../src/assets/no_image.jpg";
+import NoCoverPlaceholder from "../assets/no_image.jpg";
 
 const ProfilePage = () => {
     const [coverImage, setCoverImg] = useState<string | null>(null);
     const [profileImage, setProfileImg] = useState<string | null>(null);
-    const [feedTab, setFeedTab] = useState("userPosts");
+    const [feedTab, setFeedTab] = useState<"forYou" | "following" | "userPosts" | "liked">("userPosts");
 
-    const coverImgRef = useRef<HTMLInputElement>(null);
-    const profileImgRef = useRef<HTMLInputElement>(null);
+    const coverImgRef = useRef<HTMLInputElement | null>(null);
+    const profileImgRef = useRef<HTMLInputElement | null>(null);
 
     const { username } = useParams();
 
     const { followUnfollow, isPending } = useFollow();
 
     const { data: authUser } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
-    const { data: userPosts, isPending: isUserPostsLoading } = useQuery<Post[]>({ queryKey: [`posts/user/${authUser?.username}`] })
+    const { data: userPosts, isPending: isUserPostsLoading } = useQuery<Post[]>(
+        { queryKey: [`posts/user/${authUser?.username}`] }
+    )
 
     const queryClient = useQueryClient();
 
     const { data: user, isLoading, refetch, isRefetching, error } = useQuery<User>({
         queryKey: [`users/profile/${username}`],
         enabled: !!username,
-        retry: 1
+        retry: 3
     });
 
     const { mutateAsync: updateProfileImages, isPending: isUpdatingProfileImages } = useMutation({
@@ -76,7 +78,7 @@ const ProfilePage = () => {
         if (username) refetch();
     }, [username, refetch]);
 
-    const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>, state: string) => {
+    const handleImgChange = (e: ChangeEvent<HTMLInputElement>, state: string) => {
         const file = e.target.files?.[0];
         if (file) {
             const reader = new FileReader();
@@ -127,39 +129,36 @@ const ProfilePage = () => {
                                 />
                                 <div className='avatar absolute top-45 left-5 group'>
                                     {profileImage || user.profileImage ?
-                                        (
-                                            <div className='size-32 rounded-full relative'>
-                                                <img src={profileImage || user?.profileImage} />
-                                                {isMyProfile && (
-                                                    <div className='absolute top-5 right-4 p-1 bg-secondary rounded-full group-hover:opacity-100 opacity-0 hover:scale-105 cursor-pointer'>
-                                                        <Camera
-                                                            className='size-4'
-                                                            onClick={() => profileImgRef.current?.click()}
-                                                        />
-                                                    </div>)}
+                                        <div className='size-32 rounded-full relative'>
+                                            <img src={profileImage || user?.profileImage} />
+                                            {isMyProfile && (
+                                                <div className='absolute top-5 right-4 p-1 bg-secondary rounded-full group-hover:opacity-100 opacity-0 hover:scale-105 cursor-pointer'>
+                                                    <Camera
+                                                        className='size-4'
+                                                        onClick={() => profileImgRef.current?.click()}
+                                                    />
+                                                </div>)}
+                                        </div>
+                                        :
+                                        <div className="avatar avatar-placeholder relative">
+                                            <div className="bg-neutral text-neutral-content rounded-full bg-radial size-32">
+                                                <span className='text-5xl'>{user?.firstName[0]}{user?.lastName[0]}</span>
                                             </div>
-                                        ) :
-                                        (
-                                            <div className="avatar avatar-placeholder relative">
-                                                <div className="bg-neutral text-neutral-content rounded-full bg-radial size-32">
-                                                    <span className='text-5xl'>{user?.firstName[0]}{user?.lastName[0]}</span>
+                                            {isMyProfile && (
+                                                <div className='absolute top-5 right-4 p-1 bg-secondary rounded-full group-hover:opacity-100 opacity-0 hover:scale-105 cursor-pointer'>
+                                                    <Camera
+                                                        className='size-4'
+                                                        onClick={() => profileImgRef.current?.click()}
+                                                    />
                                                 </div>
-                                                {isMyProfile && (
-                                                    <div className='absolute top-5 right-4 p-1 bg-secondary rounded-full group-hover:opacity-100 opacity-0 hover:scale-105 cursor-pointer'>
-                                                        <Camera
-                                                            className='size-4'
-                                                            onClick={() => profileImgRef.current?.click()}
-                                                        />
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )
+                                            )}
+                                        </div>
                                     }
                                 </div>
                             </div>
                             {/* Edit and follow buttons */}
                             <div className='flex justify-end px-4 mt-5'>
-                                {isMyProfile && <EditProfileModal authUser={authUser as User} />}
+                                {isMyProfile && <EditProfileModal authUser={authUser} />}
                                 {!isMyProfile && (
                                     <button
                                         className='btn btn-primary rounded-full' disabled={isPending}
@@ -180,7 +179,7 @@ const ProfilePage = () => {
                                         }}
                                         disabled={isUpdatingProfileImages}
                                     >
-                                        {isUpdatingProfileImages ? (<span className="loading loading-spinner loading-sm" />) : (<span>Update</span>)}
+                                        {isUpdatingProfileImages ? <span className="loading loading-spinner loading-sm" /> : <span>Update</span>}
                                     </button>
                                 )}
                             </div>
@@ -193,7 +192,7 @@ const ProfilePage = () => {
                                     <div className="flex flex-row gap-4 items-center">
                                         {user?.link && (
                                             <div className='flex gap-2 items-center '>
-                                                <>
+                                                <div>
                                                     <Link2 className="size-4" />
                                                     <a
                                                         href={user.link}
@@ -203,7 +202,7 @@ const ProfilePage = () => {
                                                     >
                                                         {user.link}
                                                     </a>
-                                                </>
+                                                </div>
                                             </div>
                                         )}
                                     </div>

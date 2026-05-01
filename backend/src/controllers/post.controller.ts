@@ -1,15 +1,25 @@
-import { type Response } from "express";
+import { type Request, type Response } from "express";
+import { Types } from "mongoose";
 import { User } from "../models/user.model.ts";
 import { Post } from "./../models/post.model.ts";
 import { Notification } from "../models/notification.model.ts";
 import cloudinary from "../lib/cloudinary.ts";
+import { type ExpandedRequestWithAuthUser } from "../middleware/protectedRoute.ts";
 
-export const createNewPost = async (req: any, res: Response) => {
+type PostBodyType = {
+  text: string;
+  image: string | null;
+};
+
+export const createNewPost = async (
+  req: ExpandedRequestWithAuthUser<{}, {}, PostBodyType>,
+  res: Response,
+) => {
   try {
     const { text } = req.body;
     let { image } = req.body;
 
-    const currentUserId = req.user._id;
+    const currentUserId = req.user?._id!.toString();
     const currentUser = await User.findById(currentUserId);
     if (!currentUser)
       return res.status(400).json({ error: "User does not exist" });
@@ -37,7 +47,10 @@ export const createNewPost = async (req: any, res: Response) => {
   }
 };
 
-export const deletePost = async (req: any, res: Response) => {
+export const deletePost = async (
+  req: ExpandedRequestWithAuthUser<{ postId: string }>,
+  res: Response,
+) => {
   try {
     const { postId } = req.params;
 
@@ -45,13 +58,13 @@ export const deletePost = async (req: any, res: Response) => {
     if (!foundPost)
       return res.status(400).json({ error: "Post does not exist" });
 
-    if (foundPost.byUser.toString() !== req.user._id.toString())
+    if (foundPost.byUser.toString() !== req.user?._id.toString())
       return res
         .status(400)
-        .json({ error: "You are not allowed to delete this post" });
+        .json({ error: "You can only delete your own posts" });
 
     if (foundPost.image) {
-      const imageId = foundPost.image.split("/").pop()?.split(".")[0] as string;
+      const imageId = foundPost.image.split("/").pop()?.split(".")[0];
       const imageToDelete = `Glance/${imageId}`;
       await cloudinary.uploader.destroy(imageToDelete);
     }
@@ -65,10 +78,13 @@ export const deletePost = async (req: any, res: Response) => {
   }
 };
 
-export const deleteComment = async (req: any, res: Response) => {
+export const deleteComment = async (
+  req: ExpandedRequestWithAuthUser<{ postId: string; commentId: string }>,
+  res: Response,
+) => {
   try {
     const { postId, commentId } = req.params;
-    const currentUserId = req.user._id;
+    const currentUserId = req.user?._id.toString();
 
     const currentPost = await Post.findById(postId);
     if (!currentPost) {
@@ -80,9 +96,8 @@ export const deleteComment = async (req: any, res: Response) => {
       return res.status(404).json({ error: "Comment does not exist" });
     }
 
-    const isCommentAuthor = comment.by.toString() === currentUserId.toString();
-    const isPostOwner =
-      currentPost.byUser.toString() === currentUserId.toString();
+    const isCommentAuthor = comment.by.toString() === currentUserId;
+    const isPostOwner = currentPost.byUser.toString() === currentUserId;
 
     if (!isCommentAuthor && !isPostOwner) {
       return res.status(403).json({
@@ -105,13 +120,20 @@ export const deleteComment = async (req: any, res: Response) => {
   }
 };
 
-export const commentOnPost = async (req: any, res: Response) => {
+export const commentOnPost = async (
+  req: ExpandedRequestWithAuthUser<
+    { postId: string },
+    {},
+    Pick<PostBodyType, "text">
+  >,
+  res: Response,
+) => {
   try {
     const { postId } = req.params;
-    const currentUserId = req.user._id;
+    const currentUserId = req.user?._id!.toString();
     const { text } = req.body;
 
-    if (!text || text.trim().length == 0)
+    if (!text || text.trim().length === 0)
       return res.status(400).json({ error: "Text is required to comment" });
 
     const currentPost = await Post.findById(postId);
@@ -143,42 +165,47 @@ export const commentOnPost = async (req: any, res: Response) => {
   }
 };
 
-export const likeAndUnlikePost = async (req: any, res: Response) => {
+export const likeAndUnlikePost = async (
+  req: ExpandedRequestWithAuthUser<{ postId: string }>,
+  res: Response,
+) => {
   try {
-    const currentUserId = req.user._id;
+    const currentUserId = req.user?._id.toString();
     const { postId } = req.params;
 
     const currentPost = await Post.findById(postId);
     if (!currentPost) return res.status(400).json({ error: "Post not found" });
 
-    const hasUserLikedPost = currentPost.likes.includes(currentUserId);
+    const hasUserLikedPost = currentPost.likes.includes(
+      new Types.ObjectId(currentUserId),
+    );
     if (hasUserLikedPost) {
       await Post.updateOne(
         { _id: postId },
-        { $pull: { likes: currentUserId } }
+        { $pull: { likes: currentUserId } },
       );
 
       await User.updateOne(
         { _id: currentUserId },
-        { $pull: { likedPosts: postId } }
+        { $pull: { likedPosts: postId } },
       );
 
       const updatedLikes = currentPost.likes.filter(
-        (id) => id.toString() !== currentUserId.toString()
+        (id) => id.toString() !== currentUserId?.toString(),
       );
 
       return res.status(200).json(updatedLikes);
     } else {
-      currentPost.likes.push(currentUserId);
+      currentPost.likes.push(new Types.ObjectId(currentUserId));
 
       await User.updateOne(
         { _id: currentUserId },
-        { $push: { likedPosts: postId } }
+        { $push: { likedPosts: postId } },
       );
 
       await currentPost.save();
 
-      if (currentUserId.toString() !== currentPost.byUser._id.toString()) {
+      if (currentUserId?.toString() !== currentPost.byUser._id.toString()) {
         const newNotification = await Notification.create({
           from: currentUserId,
           to: currentPost.byUser,
@@ -197,7 +224,7 @@ export const likeAndUnlikePost = async (req: any, res: Response) => {
   }
 };
 
-export const getAllPosts = async (req: any, res: Response) => {
+export const getAllPosts = async (req: Request, res: Response) => {
   try {
     const posts = await Post.find()
       .sort({ _id: -1 })
@@ -210,7 +237,7 @@ export const getAllPosts = async (req: any, res: Response) => {
         select: "-password",
       });
 
-    if (posts.length == 0) return res.status(200).json([]);
+    if (posts.length === 0) return res.status(200).json([]);
 
     return res.status(200).json(posts);
   } catch (error) {
@@ -219,7 +246,7 @@ export const getAllPosts = async (req: any, res: Response) => {
   }
 };
 
-export const getLikedPosts = async (req: any, res: Response) => {
+export const getLikedPosts = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
 
@@ -243,9 +270,12 @@ export const getLikedPosts = async (req: any, res: Response) => {
   }
 };
 
-export const getFollowingPosts = async (req: any, res: Response) => {
+export const getFollowingPosts = async (
+  req: ExpandedRequestWithAuthUser,
+  res: Response,
+) => {
   try {
-    const currentUserId = req.user._id;
+    const currentUserId = req.user?._id.toString();
 
     const currentUser = await User.findById(currentUserId);
     if (!currentUser)
@@ -271,7 +301,7 @@ export const getFollowingPosts = async (req: any, res: Response) => {
   }
 };
 
-export const getUserPosts = async (req: any, res: Response) => {
+export const getUserPosts = async (req: Request, res: Response) => {
   try {
     const { username } = req.params;
     const currentUser = await User.findOne({ username }).select("-password");

@@ -6,11 +6,11 @@ import { createToast } from "../components/Toast";
 import { formatDate } from "../utils/formatDate";
 
 const NotificationPage = () => {
-    const queryClient = useQueryClient();
-
-    const { data: notifications, isLoading } = useQuery<Notification[]>({
+    const { data: notifications, isLoading: isLoadingNotifications } = useQuery<Notification[]>({
         queryKey: ["notifications"],
     });
+
+    const queryClient = useQueryClient();
 
     const { mutate: deleteNotifications, isPending: isDeletingNotifications } = useMutation({
         mutationFn: async () => {
@@ -30,7 +30,7 @@ const NotificationPage = () => {
             }
         },
         onSuccess: () => {
-            createToast("success", "Notifications deleted successfully");
+            createToast("success", "Notifications deleted");
             queryClient.invalidateQueries({ queryKey: ["notifications"] });
         },
         onError: (error) => {
@@ -56,23 +56,13 @@ const NotificationPage = () => {
             }
         },
         onSuccess: () => {
-            createToast("success", "Notifications deleted successfully");
+            createToast("success", "Notification deleted");
             queryClient.invalidateQueries({ queryKey: ["notifications"] });
         },
         onError: (error) => {
             createToast("error", error.message);
         }
     });
-
-    const handleDeleteNotifications = () => {
-        if (isDeletingNotifications) return;
-        deleteNotifications();
-    };
-
-    const handleDeleteOneNotification = (notificationId: string) => {
-        if (isDeletingOneNotification) return;
-        deleteOneNotification(notificationId);
-    };
 
     return (
         <>
@@ -83,17 +73,23 @@ const NotificationPage = () => {
                         <div tabIndex={0} role='button' className='m-1'>
                             <Settings2 className='size-5 cursor-pointer' />
                         </div>
-                        <ul
-                            tabIndex={0}
-                            className='dropdown-content z-[1] menu shadow bg-secondary rounded-md w-52 outline outline-primary'
-                        >
+                        <ul tabIndex={0} className='dropdown-content z-[1] menu shadow bg-secondary rounded-md w-52 outline outline-primary'>
                             <li>
-                                <p onClick={handleDeleteNotifications} className="flex flex-row items-center"><Trash2 className="size-4" />Delete notifications</p>
+                                <span
+                                    onClick={() => {
+                                        if (isDeletingNotifications) return;
+                                        deleteNotifications();
+                                    }}
+                                    className="flex flex-row items-center"
+                                >
+                                    <Trash2 className="size-4" />
+                                    Delete notifications
+                                </span>
                             </li>
                         </ul>
                     </div>
                 </div>
-                {isLoading && (
+                {isLoadingNotifications && (
                     <div className='flex justify-center h-full items-center'>
                         <span className="loading loading-ring loading-xl" />
                     </div>
@@ -108,23 +104,21 @@ const NotificationPage = () => {
                             <Link viewTransition to={`/profile/${notification.from.username}`} className="flex flex-row items-center gap-2 group">
                                 <div className='avatar'>
                                     {notification.from.profileImage ?
-                                        (
-                                            <div className='size-8 rounded-full'>
-                                                <img src={notification.from.profileImage} alt={notification.from.username} />
-                                            </div>
-                                        )
+                                        <div className='size-8 rounded-full'>
+                                            <img src={notification.from.profileImage} alt={notification.from.username} />
+                                        </div>
                                         :
-                                        (
-                                            <div className="avatar avatar-placeholder">
-                                                <div className="bg-neutral text-neutral-content size-8 rounded-full">
-                                                    <span>{notification.from.username[0]}</span>
-                                                </div>
+                                        <div className="avatar avatar-placeholder">
+                                            <div className="bg-neutral text-neutral-content size-8 rounded-full">
+                                                <span>{notification.from.username[0]}</span>
                                             </div>
-                                        )
+                                        </div>
                                     }
                                 </div>
                                 <div className='flex gap-1 items-center'>
-                                    <span className='font-semibold text-primary group-hover:underline underline-offset-2'>@{notification.from.username}</span>{" "}
+                                    <span className='font-semibold text-primary group-hover:underline underline-offset-2'>
+                                        @{notification.from.username}
+                                    </span>{" "}
                                     <span className="font-light">
                                         {notification.type === "follow" && "followed you"}
                                         {notification.type === "like" && "liked you post"}
@@ -133,15 +127,28 @@ const NotificationPage = () => {
                                 </div>
                             </Link>
                             <span className="text-sm ml-auto opacity-50 font-semibold flex items-center gap-3">
-                                <p className="flex items-center gap-1"><Calendar1 className="size-3.5" /><span>{formatDate(notification.createdAt)}</span></p>
+                                <p className="flex items-center gap-1">
+                                    <Calendar1 className="size-3.5" />
+                                    <span>{formatDate(notification.createdAt)}</span>
+                                </p>
                             </span>
-                            <p onClick={() => handleDeleteOneNotification(notification._id)} className="ml-auto cursor-pointer hover:scale-105">
-                                {isDeletingOneNotification ? (<span className="loading loading-spinner loading-sm" />) : (<XCircle className="size-5 text-red-400" />)}
+                            <p
+                                className="ml-auto cursor-pointer hover:scale-105"
+                                onClick={() => {
+                                    if (isDeletingOneNotification) return;
+                                    deleteOneNotification(notification._id);
+                                }}
+                            >
+                                {isDeletingOneNotification ?
+                                    <span className="loading loading-spinner loading-sm" />
+                                    :
+                                    <XCircle className="size-5 text-red-400" />
+                                }
                             </p>
                         </div>
                     </div>
                 ))}
-            </div>
+            </div >
         </>
     );
 };

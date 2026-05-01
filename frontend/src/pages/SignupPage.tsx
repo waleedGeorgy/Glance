@@ -1,9 +1,9 @@
-import { useState, type FormEvent } from "react";
+import { useState, type ChangeEvent, type FormEvent } from "react";
 import { Link } from "react-router";
 import { Mail, User2, LockKeyhole } from "lucide-react"
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createToast } from "../components/Toast";
-import GlanceLogo from "../../src/assets/logo.png";
+import GlanceLogo from "../assets/logo.png";
 
 interface formDataProps {
     email: string,
@@ -51,13 +51,7 @@ const SignupPage = () => {
         }
     });
 
-
-    const handleSignup = (e: FormEvent) => {
-        e.preventDefault();
-        mutate(formData);
-    };
-
-    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
@@ -68,7 +62,12 @@ const SignupPage = () => {
                 <h1 className='text-8xl'>lance</h1>
             </div>
             <div className='flex-1 flex flex-col justify-center items-center'>
-                <form className='flex gap-4 flex-col' onSubmit={handleSignup}>
+                <form
+                    className='flex gap-4 flex-col'
+                    onSubmit={(e: FormEvent) => {
+                        e.preventDefault();
+                        mutate(formData);
+                    }}>
                     <div className='flex flex-1 gap-0.5 items-center justify-center lg:hidden'>
                         <img src={GlanceLogo} alt='Logo of glance' className='w-14' />
                         <h1 className='text-5xl'>lance</h1>

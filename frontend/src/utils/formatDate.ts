@@ -1,9 +1,9 @@
-export const formatDate = (createdAt: string | Date) => {
+export const formatDate = (date: string | Date) => {
   const currentDate = new Date();
-  const createdAtDate = new Date(createdAt);
+  const createdAtDate = new Date(date);
 
   const timeDifferenceInSeconds = Math.floor(
-    (currentDate.getTime() - createdAtDate.getTime()) / 1000
+    (currentDate.getTime() - createdAtDate.getTime()) / 1000,
   );
   const timeDifferenceInMinutes = Math.floor(timeDifferenceInSeconds / 60);
   const timeDifferenceInHours = Math.floor(timeDifferenceInMinutes / 60);
