@@ -23,7 +23,7 @@ const LeftSidebar = () => {
             }
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] });
+            queryClient.invalidateQueries({ queryKey: ["auth/getCurrentAuthUser"] });
             createToast("success", "Logged out successfully!");
         },
         onError: () => {
@@ -31,7 +31,7 @@ const LeftSidebar = () => {
         }
     });
 
-    const { data: user } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
+    const { data: user } = useQuery<User>({ queryKey: ["auth/getCurrentAuthUser"] });
 
     const { data: notifications } = useQuery<Notification[]>({ queryKey: ["notifications"] });
 

@@ -22,7 +22,7 @@ const ProfilePage = () => {
 
     const { followUnfollow, isPending } = useFollow();
 
-    const { data: authUser } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
+    const { data: authUser } = useQuery<User>({ queryKey: ["auth/getCurrentAuthUser"] });
     const { data: userPosts, isPending: isUserPostsLoading } = useQuery<Post[]>(
         { queryKey: [`posts/user/${authUser?.username}`] }
     )
@@ -59,7 +59,7 @@ const ProfilePage = () => {
         onSuccess: () => {
             createToast("success", "Image updated successfully");
             Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] }),
+                queryClient.invalidateQueries({ queryKey: ["auth/getCurrentAuthUser"] }),
                 queryClient.invalidateQueries({ queryKey: [`users/profile/${user?.username}`] })
             ]);
         },
@@ -191,24 +191,22 @@ const ProfilePage = () => {
                                     <span>{user?.bio}</span>
                                     <div className="flex flex-row gap-4 items-center">
                                         {user?.link && (
-                                            <div className='flex gap-2 items-center '>
-                                                <div>
-                                                    <Link2 className="size-4" />
-                                                    <a
-                                                        href={user.link}
-                                                        target='_blank'
-                                                        rel='noreferrer'
-                                                        className='text-sm text-blue-400 hover:underline underline-offset-2'
-                                                    >
-                                                        {user.link}
-                                                    </a>
-                                                </div>
+                                            <div className='flex gap-2 items-center'>
+                                                <Link2 className="size-5" />
+                                                <a
+                                                    href={user.link}
+                                                    target='_blank'
+                                                    rel='noreferrer'
+                                                    className='text-sm text-blue-400 hover:underline underline-offset-2'
+                                                >
+                                                    {user.link}
+                                                </a>
                                             </div>
                                         )}
                                     </div>
                                 </div>
                                 <div className='flex items-center gap-2 mt-1'>
-                                    {/* todo: implement showing followers and following users */}
+                                    {/* TODO: implement showing followers and following users */}
                                     <div className='flex gap-1 items-center bg-emerald-500 px-2 py-1 rounded-3xl text-secondary font-semibold text-sm'>
                                         <span>{user?.following.length}</span>
                                         <span>Following</span>

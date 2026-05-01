@@ -25,7 +25,7 @@ function PublicOnlyRoute({ children, authUser }: { children: React.ReactNode, au
 
 function App() {
   const { data: authUser, isLoading: isCheckingAuthUser } = useQuery({
-    queryKey: ["auth/checkAuth"],
+    queryKey: ["auth/getCurrentAuthUser"],
     retry: false
   });
 

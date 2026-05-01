@@ -8,7 +8,7 @@ import { formatDate } from "../utils/formatDate";
 
 const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
     const postOwner = post?.byUser;
-    const { data: authUser } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
+    const { data: authUser } = useQuery<User>({ queryKey: ["auth/getCurrentAuthUser"] });
     const isMyPost = authUser?._id === post.byUser._id;
 
     const queryClient = useQueryClient();

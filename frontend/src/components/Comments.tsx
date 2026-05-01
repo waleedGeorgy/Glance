@@ -9,7 +9,7 @@ import { formatDate } from '../utils/formatDate';
 const Comments = ({ post, feedTab }: { post: Post, feedTab: string }) => {
     const [comment, setComment] = useState("");
 
-    const { data: authUser } = useQuery<User>({ queryKey: ["auth/checkAuth"] });
+    const { data: authUser } = useQuery<User>({ queryKey: ["auth/getCurrentAuthUser"] });
 
     const queryClient = useQueryClient();
 

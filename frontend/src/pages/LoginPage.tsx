@@ -38,7 +38,7 @@ const LoginPage = () => {
             }
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] });
+            queryClient.invalidateQueries({ queryKey: ["auth/getCurrentAuthUser"] });
             createToast("success", "Logged in successfully! Redirecting...");
         }
     });

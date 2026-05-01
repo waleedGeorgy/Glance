@@ -23,7 +23,7 @@ const useFollow = () => {
         },
         onSuccess: () => {
             Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] }),
+                queryClient.invalidateQueries({ queryKey: ["auth/getCurrentAuthUser"] }),
                 queryClient.invalidateQueries({ queryKey: ["users/suggested"] })
             ]);
         },

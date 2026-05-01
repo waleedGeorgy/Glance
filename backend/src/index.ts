@@ -1,4 +1,4 @@
-import express from "express";
+import express, { type Response, type Request } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
@@ -34,7 +34,7 @@ app.use("/api/notifications", notificationRouter);
 if (process.env.NODE_ENV === "production") {
   app.use(express.static(path.join(__dirname, "../frontend/dist")));
 
-  app.get(/^(?!\/api).*/, (req, res) => {
+  app.get(/^(?!\/api).*/, (req: Request, res: Response) => {
     res.sendFile(path.resolve(__dirname, "../frontend/dist/index.html"));
   });
 }

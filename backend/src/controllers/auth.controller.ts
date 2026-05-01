@@ -117,11 +117,14 @@ export const logout = (req: Request, res: Response) => {
   }
 };
 
-export const checkAuth = async (req: ExpandedRequestWithAuthUser, res: Response) => {
+export const getCurrentAuthUser = async (
+  req: ExpandedRequestWithAuthUser,
+  res: Response,
+) => {
   try {
     return res.status(200).json(req.user);
   } catch (error) {
-    console.log("Error in checkAuth controller" + error);
+    console.log("Error in getCurrentAuthUser controller" + error);
     return res.status(500).json({ error: "Internal server error" });
   }
 };

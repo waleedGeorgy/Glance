@@ -35,6 +35,6 @@ export interface Notification {
   from: User;
   read: boolean;
   to: string;
-  type: string;
+  type: "follow" | "like" | "comment";
   createdAt: string | Date;
 }
