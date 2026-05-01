@@ -1,10 +1,12 @@
-import { type Response } from "express";
+import { Types } from "mongoose";
+import { type Request, type Response } from "express";
 import bcrypt from "bcryptjs";
 import { Notification } from "../models/notification.model.ts";
-import { User } from "../models/user.model.ts";
+import { User, type UserType } from "../models/user.model.ts";
 import cloudinary from "../lib/cloudinary.ts";
+import { type ExpandedRequestWithAuthUser } from "../middleware/protectedRoute.ts";
 
-export const getUserProfile = async (req: any, res: Response) => {
+export const getUserProfile = async (req: Request, res: Response) => {
   try {
     const { username } = req.params;
     if (!username)
@@ -23,14 +25,17 @@ export const getUserProfile = async (req: any, res: Response) => {
   }
 };
 
-export const followAndUnfollowUser = async (req: any, res: Response) => {
+export const followAndUnfollowUser = async (
+  req: ExpandedRequestWithAuthUser<{ userId: string }>,
+  res: Response,
+) => {
   try {
     const { userId } = req.params;
 
     const userToModify = await User.findById(userId);
-    const currentUser = await User.findById(req.user._id);
+    const currentUser = await User.findById(req.user?._id);
 
-    if (req.user._id == userId)
+    if (req.user?._id.toString() === userId)
       return res
         .status(400)
         .json({ error: "You cannot follow/unfollow yourself" });
@@ -38,29 +43,31 @@ export const followAndUnfollowUser = async (req: any, res: Response) => {
     if (!userToModify || !currentUser)
       return res.status(404).json({ error: "User not found" });
 
-    const isFollowing = currentUser.following.includes(userId);
+    const isFollowing = currentUser.following.includes(
+      new Types.ObjectId(userId),
+    );
 
     if (isFollowing) {
-      await User.findByIdAndUpdate(req.user._id, {
+      await User.findByIdAndUpdate(req.user?._id, {
         $pull: { following: userId },
       });
 
       await User.findByIdAndUpdate(userId, {
-        $pull: { followers: req.user._id },
+        $pull: { followers: req.user?._id },
       });
 
       return res.status(200).json({ message: "User unfollowed successfully" });
     } else {
-      await User.findByIdAndUpdate(req.user._id, {
+      await User.findByIdAndUpdate(req.user?._id, {
         $push: { following: userId },
       });
 
       await User.findByIdAndUpdate(userId, {
-        $push: { followers: req.user._id },
+        $push: { followers: req.user?._id },
       });
 
       const newNotification = new Notification({
-        from: req.user._id,
+        from: req.user?._id,
         to: userToModify._id,
         type: "follow",
       });
@@ -75,13 +82,15 @@ export const followAndUnfollowUser = async (req: any, res: Response) => {
   }
 };
 
-export const getSuggestedUsers = async (req: any, res: Response) => {
+export const getSuggestedUsers = async (
+  req: ExpandedRequestWithAuthUser,
+  res: Response,
+) => {
   try {
-    const currentUserId = req.user._id;
+    const currentUserId = req.user?._id!.toString();
 
-    const usersFollowedByCurrentUser = await User.findById(
-      currentUserId
-    ).select("following");
+    const usersFollowedByCurrentUser =
+      await User.findById(currentUserId).select("following");
 
     const users = await User.aggregate([
       {
@@ -94,7 +103,7 @@ export const getSuggestedUsers = async (req: any, res: Response) => {
     ]);
 
     const usersNotFollowedByCurrentUser = users.filter(
-      (user) => !usersFollowedByCurrentUser?.following.includes(user._id)
+      (user) => !usersFollowedByCurrentUser?.following.includes(user._id),
     );
 
     const suggestedUsers = usersNotFollowedByCurrentUser.slice(0, 4);
@@ -106,9 +115,19 @@ export const getSuggestedUsers = async (req: any, res: Response) => {
   }
 };
 
-export const updateUserProfile = async (req: any, res: Response) => {
+export const updateUserProfile = async (
+  req: ExpandedRequestWithAuthUser<
+    {},
+    {},
+    Omit<UserType, "password"> & {
+      currentPassword: string;
+      newPassword: string;
+    }
+  >,
+  res: Response,
+) => {
   try {
-    const currentUserId = req.user._id;
+    const currentUserId = req.user?._id!.toString();
     const {
       firstName,
       lastName,
@@ -133,7 +152,7 @@ export const updateUserProfile = async (req: any, res: Response) => {
     if (currentPassword && newPassword) {
       const isPasswordMatching = await bcrypt.compare(
         currentPassword,
-        currentUser.password
+        currentUser.password,
       );
       if (!isPasswordMatching)
         return res.status(400).json({ error: "Incorrect current password" });

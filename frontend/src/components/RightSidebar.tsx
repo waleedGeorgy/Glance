@@ -23,15 +23,15 @@ const RightSidebar = () => {
     }
 
     return (
-        <div className='hidden lg:block ml-1.5'>
-            <div className='bg-secondary px-4 py-3 rounded-b-lg sticky top-0'>
+        <div className='hidden lg:block ml-1.5 pt-2 pr-4'>
+            <div className='bg-secondary px-4 py-3 rounded-md sticky top-0'>
                 <p className='font-semibold text-lg'>Suggested users</p>
                 <div className="divider my-1" />
                 <div className='flex justify-center flex-col gap-4'>
                     {isLoading ?
-                        (<RightSidebarSkeleton />)
+                        <RightSidebarSkeleton />
                         :
-                        (<>
+                        <>
                             {suggestedUsers?.map((user: User) => (
                                 <Link
                                     viewTransition
@@ -42,19 +42,15 @@ const RightSidebar = () => {
                                     <div className='flex gap-2 items-center'>
                                         <div className='avatar'>
                                             {user?.profileImage ?
-                                                (
-                                                    <div className='size-9 rounded-full'>
-                                                        <img src={user?.profileImage} alt={user?.username} />
-                                                    </div>
-                                                )
+                                                <div className='size-9 rounded-full'>
+                                                    <img src={user?.profileImage} alt={user?.username} />
+                                                </div>
                                                 :
-                                                (
-                                                    <div className="avatar avatar-placeholder">
-                                                        <div className="bg-neutral text-neutral-content size-9 rounded-full">
-                                                            <span>{user.firstName[0]}</span>
-                                                        </div>
+                                                <div className="avatar avatar-placeholder">
+                                                    <div className="bg-neutral text-neutral-content size-9 rounded-full">
+                                                        <span>{user.firstName[0]}</span>
                                                     </div>
-                                                )
+                                                </div>
                                             }
                                         </div>
                                         <div className='flex flex-col'>
@@ -73,12 +69,16 @@ const RightSidebar = () => {
                                                 followUnfollow(user?._id);
                                             }}
                                         >
-                                            {isPending ? (<span><span className="loading loading-dots loading-xs" /></span>) : (<span>Follow</span>)}
+                                            {isPending ?
+                                                <span className="loading loading-dots loading-xs" />
+                                                :
+                                                <span>Follow</span>
+                                            }
                                         </button>
                                     </div>
                                 </Link>
                             ))}
-                        </>)
+                        </>
                     }
                 </div>
             </div>

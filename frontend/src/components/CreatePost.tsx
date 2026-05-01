@@ -1,20 +1,21 @@
-import { useEffect, useRef, useState, type FormEvent } from "react";
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { Image, Smile, X } from "lucide-react";
 import EmojiPicker, { Theme, EmojiStyle, type EmojiClickData } from 'emoji-picker-react';
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createToast } from "./Toast";
 
 const CreatePost = () => {
-  const [text, setText] = useState<string>("");
+  const [text, setText] = useState("");
   const [image, setImage] = useState<string | null>(null);
-  const [showEmojiPicker, setShowEmojiPicker] = useState<boolean>(false);
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
 
   const imgRef = useRef<HTMLInputElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const emojiButtonRef = useRef<HTMLDivElement>(null);
 
   const queryClient = useQueryClient();
-  const { mutate: createPost, isPending } = useMutation({
+
+  const { mutate: createPost, isPending: isCreatingPost } = useMutation({
     mutationFn: async ({ text, image }: { text: string, image: string | null }) => {
       try {
         const res = await fetch("/api/posts/create", {
@@ -46,12 +47,7 @@ const CreatePost = () => {
     }
   });
 
-  const handleCreatePost = (e: FormEvent) => {
-    e.preventDefault();
-    createPost({ text, image });
-  };
-
-  const handleImgChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImgChange = (e: ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
       const reader = new FileReader();
@@ -68,22 +64,18 @@ const CreatePost = () => {
 
     if (!textarea) return;
 
-    // Get current cursor position
     const start = textarea.selectionStart;
     const end = textarea.selectionEnd;
 
-    // Insert emoji at cursor position
     const newText = text.substring(0, start) + emoji + text.substring(end);
     setText(newText);
 
-    // Set cursor position after the inserted emoji
     setTimeout(() => {
       textarea.selectionStart = start + emoji.length;
       textarea.selectionEnd = start + emoji.length;
       textarea.focus();
     }, 0);
 
-    // Close the emoji picker
     setShowEmojiPicker(false);
   };
 
@@ -102,7 +94,13 @@ const CreatePost = () => {
 
   return (
     <div className=' bg-secondary'>
-      <form className='flex flex-col gap-3 w-full' onSubmit={handleCreatePost}>
+      <form
+        className='flex flex-col gap-3 w-full'
+        onSubmit={(e: FormEvent) => {
+          e.preventDefault();
+          createPost({ text, image });
+        }}
+      >
         <textarea
           name="post"
           ref={textareaRef}
@@ -129,17 +127,17 @@ const CreatePost = () => {
         <div className='flex justify-between py-2 px-4 border-t border-accent'>
           <div className='flex gap-2 items-center'>
             <Image
-              className={`size-6 ${isPending ? ("text-neutral-600 hover:scale-100 pointer-events-none") : ("text-primary hover:scale-105 cursor-pointer")}`}
+              className={`size-6 ${isCreatingPost ? ("text-neutral-600 hover:scale-100 pointer-events-none") : ("text-primary hover:scale-105 cursor-pointer")}`}
               onClick={() => imgRef.current?.click()}
             />
             <div ref={emojiButtonRef} className="relative">
               <Smile
-                aria-disabled={isPending}
-                className={`size-6 ${isPending ? ("text-neutral-600 hover:scale-100 pointer-events-none") : ("text-primary hover:scale-105 cursor-pointer")}`}
+                aria-disabled={isCreatingPost}
+                className={`size-6 ${isCreatingPost ? ("text-neutral-600 hover:scale-100 pointer-events-none") : ("text-primary hover:scale-105 cursor-pointer")}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               />
               {showEmojiPicker && (
-                <div className="absolute top-full left-0 z-10" aria-disabled={isPending}>
+                <div className="absolute top-full left-0 z-10" aria-disabled={isCreatingPost}>
                   <EmojiPicker
                     onEmojiClick={handleEmojiClick}
                     width={350}
@@ -152,12 +150,12 @@ const CreatePost = () => {
             </div>
           </div>
           <input type='file' accept="image/*" hidden ref={imgRef} onChange={handleImgChange} />
-          <button className='btn btn-primary rounded-full btn-sm px-5' disabled={isPending || (!text && !image)}>
-            {isPending ? <span>Posting <span className="loading loading-dots loading-sm" /></span> : <span>Post</span>}
+          <button className='btn btn-primary rounded-full btn-sm px-5' disabled={isCreatingPost || (!text && !image)}>
+            {isCreatingPost ? <span className="loading loading-dots loading-sm" /> : <span>Post</span>}
           </button>
         </div>
       </form>
-    </div>
+    </div >
   );
 };
 export default CreatePost;

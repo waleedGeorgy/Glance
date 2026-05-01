@@ -24,12 +24,12 @@ function PublicOnlyRoute({ children, authUser }: { children: React.ReactNode, au
 }
 
 function App() {
-  const { data: authUser, isLoading } = useQuery({
+  const { data: authUser, isLoading: isCheckingAuthUser } = useQuery({
     queryKey: ["auth/checkAuth"],
     retry: false
   });
 
-  if (isLoading) {
+  if (isCheckingAuthUser) {
     return (
       <div className="h-screen w-full flex items-center justify-center">
         <span className="loading loading-dots loading-xl" />

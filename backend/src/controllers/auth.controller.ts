@@ -1,9 +1,21 @@
 import bcrypt from "bcryptjs";
-import { type Response } from "express";
+import { type Request, type Response } from "express";
 import { User } from "../models/user.model.ts";
-import { generateTokenSetCookie } from "../lib/generateTokens.ts";
+import { generateToken } from "../lib/generateToken.ts";
+import { type ExpandedRequestWithAuthUser } from "../middleware/protectedRoute.ts";
 
-export const signup = async (req: any, res: Response) => {
+type AuthBodyType = {
+  username: string;
+  firstName: string;
+  lastName: string;
+  password: string;
+  email: string;
+};
+
+export const signup = async (
+  req: Request<{}, {}, AuthBodyType>,
+  res: Response,
+) => {
   try {
     const { username, firstName, lastName, password, email } = req.body;
 
@@ -48,13 +60,13 @@ export const signup = async (req: any, res: Response) => {
     });
 
     if (newUser) {
-      generateTokenSetCookie(newUser._id.toString(), res);
+      generateToken(newUser._id.toString(), res);
 
       await newUser.save();
 
       return res.status(201).json(newUser);
     } else {
-      return res.status(400).json({ error: "Failed to create the user" });
+      return res.status(400).json({ error: "Failed to create user" });
     }
   } catch (error) {
     console.log("Error in signup controller" + error);
@@ -62,7 +74,10 @@ export const signup = async (req: any, res: Response) => {
   }
 };
 
-export const login = async (req: any, res: Response) => {
+export const login = async (
+  req: Request<{}, {}, Pick<AuthBodyType, "username" | "password">>,
+  res: Response,
+) => {
   try {
     const { username, password } = req.body;
     if (!username || username.trim().length === 0) {
@@ -76,13 +91,15 @@ export const login = async (req: any, res: Response) => {
 
     const isPasswordMatching = await bcrypt.compare(
       password,
-      (user?.password as string) || ""
+      user?.password || "",
     );
 
     if (!isPasswordMatching || user?.username !== username) {
       return res.status(400).json({ error: "Invalid credentials" });
     }
-    generateTokenSetCookie(user?._id.toString() as string, res);
+
+    generateToken(user?._id.toString()!, res);
+
     return res.status(201).json(user);
   } catch (error) {
     console.log("Error in login controller" + error);
@@ -90,7 +107,7 @@ export const login = async (req: any, res: Response) => {
   }
 };
 
-export const logout = (req: any, res: Response) => {
+export const logout = (req: Request, res: Response) => {
   try {
     res.cookie("jwt", "", { maxAge: 0 });
     return res.status(200).json({ message: "Logged out successfully" });
@@ -100,10 +117,9 @@ export const logout = (req: any, res: Response) => {
   }
 };
 
-export const checkAuth = async (req: any, res: Response) => {
+export const checkAuth = async (req: ExpandedRequestWithAuthUser, res: Response) => {
   try {
-    const user = await User.findById(req.user._id).select("-password");
-    return res.status(200).json(user);
+    return res.status(200).json(req.user);
   } catch (error) {
     console.log("Error in checkAuth controller" + error);
     return res.status(500).json({ error: "Internal server error" });

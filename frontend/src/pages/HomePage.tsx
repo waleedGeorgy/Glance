@@ -3,7 +3,7 @@ import CreatePost from "../components/CreatePost";
 import Posts from "../components/Posts";
 
 const HomePage = () => {
-  const [feedTab, setFeedTab] = useState("forYou");
+  const [feedTab, setFeedTab] = useState<"forYou" | "following" | "userPosts" | "liked">("forYou");
   // todo: implement search functionality
   return (
     <>

@@ -8,7 +8,7 @@ import GlanceLogo from "../../src/assets/logo.png";
 const LeftSidebar = () => {
     const queryClient = useQueryClient();
 
-    const { mutate, isPending } = useMutation({
+    const { mutate: logout, isPending: isLoggingOut } = useMutation({
         mutationFn: async () => {
             try {
                 const res = await fetch("/api/auth/logout", {
@@ -36,7 +36,7 @@ const LeftSidebar = () => {
     const { data: notifications } = useQuery<Notification[]>({ queryKey: ["notifications"] });
 
     return (
-        <div className='md:flex-[2_2_0] max-w-52'>
+        <div className='md:flex-[2_2_0] max-w-52 pl-1'>
             <div className='sticky top-0 left-0 h-screen flex flex-col border-r border-accent w-20 md:w-full'>
                 <Link viewTransition to='/' className='flex items-center gap-1 justify-center md:justify-start pt-3 px-2 group w-fit'>
                     <img src={GlanceLogo} alt='Logo of glance' className='w-9' />
@@ -75,19 +75,15 @@ const LeftSidebar = () => {
                             >
                                 <div className='avatar'>
                                     {user?.profileImage ?
-                                        (
-                                            <div className='size-9 rounded-full'>
-                                                <img src={user?.profileImage} alt={user?.username} />
-                                            </div>
-                                        )
+                                        <div className='size-9 rounded-full'>
+                                            <img src={user?.profileImage} alt={user?.username} />
+                                        </div>
                                         :
-                                        (
-                                            <div className="avatar avatar-placeholder">
-                                                <div className="bg-neutral text-neutral-content size-9 rounded-full border-2 border-primary">
-                                                    <span>{user?.firstName[0]}</span>
-                                                </div>
+                                        <div className="avatar avatar-placeholder">
+                                            <div className="bg-neutral text-neutral-content size-9 rounded-full border-2 border-primary">
+                                                <span>{user?.firstName[0]}</span>
                                             </div>
-                                        )
+                                        </div>
                                     }
                                 </div>
                                 <div className='flex justify-between items-center flex-1'>
@@ -97,10 +93,13 @@ const LeftSidebar = () => {
                                     </div>
                                 </div>
                             </Link>
-                            {isPending ?
-                                (<span className="loading loading-dots loading-sm" />)
+                            {isLoggingOut ?
+                                <span className="loading loading-dots loading-sm" />
                                 :
-                                (<LogOut className='size-5 hidden md:inline-block cursor-pointer hover:text-red-400 transition-all duration-300' onClick={() => { mutate() }} />)
+                                <LogOut
+                                    className='size-5 hidden md:inline-block cursor-pointer hover:text-red-400 transition-all duration-300'
+                                    onClick={() => { logout() }}
+                                />
                             }
                         </div>
                     )}

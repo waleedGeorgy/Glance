@@ -4,7 +4,8 @@ import SinglePost from "./SinglePost";
 import PostsSkeleton from "./skeletons/PostsSkeleton";
 import type { Post } from "../types";
 
-const Posts = ({ feedTab, username, userId }: { feedTab: string, username?: string | undefined, userId?: string | undefined }) => {
+const Posts = ({ feedTab, username, userId }:
+  { feedTab: "forYou" | "following" | "userPosts" | "liked", username?: string, userId?: string }) => {
   const getPostsEndpoint = () => {
     switch (feedTab) {
       case "forYou":
@@ -33,11 +34,13 @@ const Posts = ({ feedTab, username, userId }: { feedTab: string, username?: stri
   return (
     <>
       {(isLoading || isRefetching) && <PostsSkeleton />}
-      {(!isLoading && !isRefetching) && posts?.length === 0 && <p className='text-center my-6 text-xl font-light'>No posts here 😒</p>}
+      {(!isLoading && !isRefetching) && posts?.length === 0 &&
+        <p className='text-center my-6 text-xl font-light'>No posts here 😒</p>
+      }
       {(!isLoading && !isRefetching) && posts && (
-        posts.map((post: Post) => (
-          <SinglePost key={post._id} post={post} feedTab={getPostsEndpoint()} />
-        ))
+        posts.map((post: Post) =>
+          <SinglePost key={post._id} post={post} feedTab={postsEndpoint} />
+        )
       )}
     </>
   );

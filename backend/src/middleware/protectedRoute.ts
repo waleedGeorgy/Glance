@@ -1,11 +1,24 @@
-import { type NextFunction, type Response } from "express";
+import { type Request, type NextFunction, type Response } from "express";
 import jwt, { type JwtPayload } from "jsonwebtoken";
 import { config } from "dotenv";
-import { User } from "../models/user.model.ts";
+import { User, type UserType } from "../models/user.model.ts";
 
 config();
 
-export const protectedRoute = async (req: any, res: Response, next: NextFunction) => {
+export type ExpandedRequestWithAuthUser<
+  Params = any,
+  ResBody = any,
+  ReqBody = any,
+  ReqQuery = any,
+> = Request<Params, ResBody, ReqBody, ReqQuery> & {
+  user?: UserType;
+};
+
+export const protectedRoute = async (
+  req: ExpandedRequestWithAuthUser,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
     const token = req.cookies.jwt;
     if (!token)
@@ -15,7 +28,7 @@ export const protectedRoute = async (req: any, res: Response, next: NextFunction
 
     const decodedToken = jwt.verify(
       token,
-      process.env.JWT_SECRET as string
+      process.env.JWT_SECRET!,
     ) as JwtPayload;
     if (!decodedToken)
       return res.status(401).json({ error: "Unauthorized: Invalid token" });

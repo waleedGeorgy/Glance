@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
-import './index.css'
 import App from './App.tsx'
+import './index.css'
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -19,7 +19,8 @@ const queryClient = new QueryClient({
           return null;
         }
       },
-      refetchOnWindowFocus: false
+      refetchOnWindowFocus: false,
+      refetchOnReconnect: false
     }
   }
 });
