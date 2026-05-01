@@ -46,7 +46,7 @@ const SignupPage = () => {
             }
         },
         onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] });
+            queryClient.invalidateQueries({ queryKey: ["auth/getCurrentAuthUser"] });
             createToast("success", "Account created successfully! Redirecting...");
         }
     });

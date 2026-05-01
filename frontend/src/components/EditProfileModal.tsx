@@ -48,7 +48,7 @@ const EditProfileModal = ({ authUser }: { authUser?: User }) => {
                 navigate(`/profile/${data.username}`)
             }
             Promise.all([
-                queryClient.invalidateQueries({ queryKey: ["auth/checkAuth"] }),
+                queryClient.invalidateQueries({ queryKey: ["auth/getCurrentAuthUser"] }),
                 queryClient.invalidateQueries({ queryKey: [`users/profile/${authUser?.username}`] }),
                 queryClient.invalidateQueries({ queryKey: [`users/profile/${data.username}`] })
             ]);
