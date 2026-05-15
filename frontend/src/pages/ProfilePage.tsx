@@ -164,9 +164,9 @@ const ProfilePage = () => {
                                         className='btn btn-primary rounded-full' disabled={isPending}
                                         onClick={() => followUnfollow(user._id)}
                                     >
-                                        {isPending && <span className="loading loading-spinner loading-sm" />}
                                         {!isPending && !userIsFollowed && <span>Follow</span>}
                                         {!isPending && userIsFollowed && <span>Unfollow</span>}
+                                        {isPending && <span className="loading loading-spinner loading-sm" />}
                                     </button>
                                 )}
                                 {(coverImage || profileImage) && (
@@ -228,11 +228,9 @@ const ProfilePage = () => {
                                     onClick={() => setFeedTab("userPosts")}
                                 >
                                     <span className="text-primary font-semibold mr-1">{`${user?.username}'s`}</span> Posts{" "}
-                                    {isUserPostsLoading && (<span className="loading loading-ring loading-sm ml-0.5" />)}
-                                    {userPosts && !isUserPostsLoading && (`(${userPosts?.length})`)}
-                                    {feedTab === "userPosts" && (
-                                        <div className='absolute bottom-0 w-16 h-1 rounded-full bg-primary' />
-                                    )}
+                                    {isUserPostsLoading && <span className="loading loading-ring loading-sm ml-0.5" />}
+                                    {userPosts && !isUserPostsLoading && `(${userPosts?.length})`}
+                                    {feedTab === "userPosts" && <div className='absolute bottom-0 w-16 h-1 rounded-full bg-primary' />}
                                 </div>
                                 <div
                                     className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer'

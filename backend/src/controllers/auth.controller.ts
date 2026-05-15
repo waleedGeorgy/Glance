@@ -1,5 +1,6 @@
 import bcrypt from "bcryptjs";
 import { type Request, type Response } from "express";
+import validator from "validator";
 import { User } from "../models/user.model.ts";
 import { generateToken } from "../lib/generateToken.ts";
 import { type ExpandedRequestWithAuthUser } from "../middleware/protectedRoute.ts";
@@ -19,9 +20,7 @@ export const signup = async (
   try {
     const { username, firstName, lastName, password, email } = req.body;
 
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email || !emailRegex.test(email)) {
+    if (!email || email.length > 128 || !validator.isEmail(email)) {
       return res.status(400).json({ error: "Please provide a valid email" });
     }
     if (!username || username.trim().length === 0) {
@@ -41,11 +40,13 @@ export const signup = async (
         .json({ error: "Password must be at least 6 characters long" });
     }
 
-    const existingUsername = await User.findOne({ username });
+    const existingUsername = await User.findOne({
+      username: { $eq: username },
+    });
     if (existingUsername)
       return res.status(400).json({ error: "Username already in use" });
 
-    const existingEmail = await User.findOne({ email });
+    const existingEmail = await User.findOne({ email: { $eq: email } });
     if (existingEmail)
       return res.status(400).json({ error: "Email already in use" });
 
@@ -87,7 +88,7 @@ export const login = async (
       return res.status(400).json({ error: "Please enter your password" });
     }
 
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username: { $eq: username } });
 
     const isPasswordMatching = await bcrypt.compare(
       password,

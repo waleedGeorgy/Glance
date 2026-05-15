@@ -21,7 +21,7 @@ const EditProfileModal = ({ authUser }: { authUser?: User }) => {
 
     const queryClient = useQueryClient();
 
-    const { mutate: updateUserInfo, isPending } = useMutation({
+    const { mutate: updateUserInfo, isPending: isUpdatingUserInfo } = useMutation({
         mutationFn: async () => {
             try {
                 const res = await fetch("/api/users/update", {
@@ -81,7 +81,7 @@ const EditProfileModal = ({ authUser }: { authUser?: User }) => {
             <button
                 className='btn btn-primary rounded-full'
                 onClick={() => {
-                    const modal = document.getElementById("edit_profile_modal");
+                    const modal = document.getElementById("editProfileModal");
                     if (modal instanceof HTMLDialogElement) {
                         modal.showModal();
                     }
@@ -89,7 +89,7 @@ const EditProfileModal = ({ authUser }: { authUser?: User }) => {
             >
                 Edit profile
             </button>
-            <dialog id='edit_profile_modal' className='modal'>
+            <dialog id='editProfileModal' className='modal'>
                 <div className='modal-box border rounded-md border-accent shadow-md'>
                     <h3 className='font-bold text-2xl text-right mb-4'>Edit Profile</h3>
                     <form
@@ -177,8 +177,8 @@ const EditProfileModal = ({ authUser }: { authUser?: User }) => {
                                 />
                             </div>
                         </div>
-                        <button className='btn btn-primary btn-sm rounded-full w-2/3 mx-auto' disabled={isPending}>
-                            {isPending ? (<span className="loading loading-spinner loading-sm" />) : (<span>Update</span>)}
+                        <button className='btn btn-primary btn-sm rounded-full w-2/3 mx-auto' disabled={isUpdatingUserInfo}>
+                            {isUpdatingUserInfo ? <span className="loading loading-spinner loading-sm" /> : <span>Update</span>}
                         </button>
                     </form>
                 </div>
