@@ -2,6 +2,7 @@ import express, { type Response, type Request } from "express";
 import dotenv from "dotenv";
 import cookieParser from "cookie-parser";
 import cors from "cors";
+import rateLimiter from "express-rate-limit";
 import path from "path";
 import authRouter from "./routes/auth.route.ts";
 import userRouter from "./routes/user.route.ts";
@@ -16,9 +17,21 @@ const __dirname = path.resolve();
 
 const app = express();
 
+const limiter = rateLimiter({
+  windowMs: 5 * 60 * 1000,
+  max: 100,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    code: 429,
+    error: "Too many requests. Please try again later.",
+  },
+});
+
 app.use(express.json({ limit: "3mb" }));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(limiter);
 app.use(
   cors({
     origin: "http://localhost:5173",
