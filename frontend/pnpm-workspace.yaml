@@ -1,0 +1,4 @@
+allowBuilds:
+  esbuild: true
+  esbuild@0.25.10: true
+  "@tailwindcss/oxide@4.1.13": true
