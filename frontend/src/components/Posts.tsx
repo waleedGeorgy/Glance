@@ -37,11 +37,11 @@ const Posts = ({ feedTab, username, userId }:
       {(!isLoading && !isRefetching) && posts?.length === 0 &&
         <p className='text-center my-6 text-xl font-light'>No posts here 😒</p>
       }
-      {(!isLoading && !isRefetching) && posts && (
+      {(!isLoading && !isRefetching) && posts &&
         posts.map((post: Post) =>
           <SinglePost key={post._id} post={post} feedTab={postsEndpoint} />
         )
-      )}
+      }
     </>
   );
 };

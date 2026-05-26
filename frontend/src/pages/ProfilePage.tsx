@@ -94,7 +94,9 @@ const ProfilePage = () => {
         <>
             <div className='flex-[4_4_0] border-r border-accent min-h-screen'>
                 {(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
-                {!isLoading && !isRefetching && error && <p className='text-center text-lg mt-4'>User not found ☹️</p>}
+                {!isLoading && !isRefetching && error &&
+                    <p className='text-center text-lg mt-4'>User not found ☹️</p>
+                }
                 <div className='flex flex-col'>
                     {!isLoading && !isRefetching && user && (
                         <>
@@ -106,14 +108,14 @@ const ProfilePage = () => {
                                         className='h-64 w-full object-cover p-1'
                                         alt='cover image'
                                     />
-                                    {isMyProfile && (
+                                    {isMyProfile &&
                                         <div
                                             className='absolute top-4 right-4 rounded-full p-2 bg-secondary bg-opacity-75 cursor-pointer opacity-0 group-hover:opacity-100 hover:scale-105'
                                             onClick={() => coverImgRef.current?.click()}
                                         >
                                             <Edit className='size-4' />
                                         </div>
-                                    )}
+                                    }
                                 </div>
                                 <input
                                     type='file'
@@ -131,27 +133,25 @@ const ProfilePage = () => {
                                     {profileImage || user.profileImage ?
                                         <div className='size-32 rounded-full relative'>
                                             <img src={profileImage || user?.profileImage} />
-                                            {isMyProfile && (
-                                                <div className='absolute top-5 right-4 p-1 bg-secondary rounded-full group-hover:opacity-100 opacity-0 hover:scale-105 cursor-pointer'>
-                                                    <Camera
-                                                        className='size-4'
-                                                        onClick={() => profileImgRef.current?.click()}
-                                                    />
-                                                </div>)}
-                                        </div>
-                                        :
-                                        <div className="avatar avatar-placeholder relative">
-                                            <div className="bg-neutral text-neutral-content rounded-full bg-radial size-32">
-                                                <span className='text-5xl'>{user?.firstName[0]}{user?.lastName[0]}</span>
-                                            </div>
-                                            {isMyProfile && (
+                                            {isMyProfile &&
                                                 <div className='absolute top-5 right-4 p-1 bg-secondary rounded-full group-hover:opacity-100 opacity-0 hover:scale-105 cursor-pointer'>
                                                     <Camera
                                                         className='size-4'
                                                         onClick={() => profileImgRef.current?.click()}
                                                     />
                                                 </div>
-                                            )}
+                                            }
+                                        </div>
+                                        :
+                                        <div className="avatar avatar-placeholder relative">
+                                            <div className="bg-neutral text-neutral-content rounded-full bg-radial size-32">
+                                                <span className='text-5xl'>{user?.firstName[0]}{user?.lastName[0]}</span>
+                                            </div>
+                                            {isMyProfile &&
+                                                <div className='absolute top-5 right-4 p-1 bg-secondary rounded-full group-hover:opacity-100 opacity-0 hover:scale-105 cursor-pointer'>
+                                                    <Camera className='size-4' onClick={() => profileImgRef.current?.click()} />
+                                                </div>
+                                            }
                                         </div>
                                     }
                                 </div>
@@ -159,7 +159,7 @@ const ProfilePage = () => {
                             {/* Edit and follow buttons */}
                             <div className='flex justify-end px-4 mt-5'>
                                 {isMyProfile && <EditProfileModal authUser={authUser} />}
-                                {!isMyProfile && (
+                                {!isMyProfile &&
                                     <button
                                         className='btn btn-primary rounded-full' disabled={isPending}
                                         onClick={() => followUnfollow(user._id)}
@@ -168,8 +168,8 @@ const ProfilePage = () => {
                                         {!isPending && userIsFollowed && <span>Unfollow</span>}
                                         {isPending && <span className="loading loading-spinner loading-sm" />}
                                     </button>
-                                )}
-                                {(coverImage || profileImage) && (
+                                }
+                                {(coverImage || profileImage) &&
                                     <button
                                         className='btn btn-primary rounded-full ml-2'
                                         onClick={async () => {
@@ -179,9 +179,13 @@ const ProfilePage = () => {
                                         }}
                                         disabled={isUpdatingProfileImages}
                                     >
-                                        {isUpdatingProfileImages ? <span className="loading loading-spinner loading-sm" /> : <span>Update</span>}
+                                        {isUpdatingProfileImages ?
+                                            <span className="loading loading-spinner loading-sm" />
+                                            :
+                                            <span>Update</span>
+                                        }
                                     </button>
-                                )}
+                                }
                             </div>
                             {/* Profile info */}
                             <div className='flex flex-col justify-center gap-2 mt-4 px-6'>
@@ -228,18 +232,24 @@ const ProfilePage = () => {
                                     onClick={() => setFeedTab("userPosts")}
                                 >
                                     <span className="text-primary font-semibold mr-1">{`${user?.username}'s`}</span> Posts{" "}
-                                    {isUserPostsLoading && <span className="loading loading-ring loading-sm ml-0.5" />}
-                                    {userPosts && !isUserPostsLoading && `(${userPosts?.length})`}
-                                    {feedTab === "userPosts" && <div className='absolute bottom-0 w-16 h-1 rounded-full bg-primary' />}
+                                    {isUserPostsLoading &&
+                                        <span className="loading loading-ring loading-sm ml-0.5" />
+                                    }
+                                    {userPosts && !isUserPostsLoading &&
+                                        `(${userPosts?.length})`
+                                    }
+                                    {feedTab === "userPosts" &&
+                                        <div className='absolute bottom-0 w-16 h-1 rounded-full bg-primary' />
+                                    }
                                 </div>
                                 <div
                                     className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer'
                                     onClick={() => setFeedTab("liked")}
                                 >
                                     Liked posts
-                                    {feedTab === "liked" && (
+                                    {feedTab === "liked" &&
                                         <div className='absolute bottom-0 w-16 h-1 rounded-full bg-primary' />
-                                    )}
+                                    }
                                 </div>
                             </div>
                         </>

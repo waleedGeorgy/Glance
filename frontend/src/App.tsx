@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { Toaster } from 'react-hot-toast';
 import { useQuery } from "@tanstack/react-query";
@@ -9,17 +10,13 @@ import ErrorPage from "./pages/ErrorPage";
 import NotificationPage from "./pages/NotificationPage";
 import ProfilePage from "./pages/ProfilePage";
 
-function ProtectedRoute({ children, authUser }: { children: React.ReactNode, authUser: unknown }) {
-  if (!authUser) {
-    return <Navigate to="/login" replace />;
-  }
+function ProtectedRoute({ children, authUser }: { children: ReactNode, authUser: unknown }) {
+  if (!authUser) return <Navigate to="/login" replace />
   return children;
 }
 
-function PublicOnlyRoute({ children, authUser }: { children: React.ReactNode, authUser: unknown }) {
-  if (authUser) {
-    return <Navigate to="/" replace />;
-  }
+function PublicOnlyRoute({ children, authUser }: { children: ReactNode, authUser: unknown }) {
+  if (authUser) return <Navigate to="/" replace />
   return children;
 }
 

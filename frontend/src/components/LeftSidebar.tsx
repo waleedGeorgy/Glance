@@ -66,7 +66,7 @@ const LeftSidebar = () => {
                         </Link>
                     </li>
                     {/* User profile button */}
-                    {user && (
+                    {user &&
                         <div className="flex flex-row items-center gap-3 transition-all duration-300 hover:bg-accent rounded-full justify-center md:justify-start">
                             <Link
                                 viewTransition
@@ -102,7 +102,7 @@ const LeftSidebar = () => {
                                 />
                             }
                         </div>
-                    )}
+                    }
                 </ul>
             </div>
         </div>

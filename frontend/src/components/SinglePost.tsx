@@ -62,9 +62,8 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
         onSuccess: (updatedLikes) => {
             queryClient.setQueryData([feedTab], (oldData: Post[]) => {
                 return oldData.map((p) => {
-                    if (p._id === post._id) {
-                        return { ...p, likes: updatedLikes }
-                    }
+                    if (p._id === post._id) return { ...p, likes: updatedLikes }
+
                     return p;
                 });
             });
@@ -116,7 +115,7 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                                 </span>
                             </div>
                         </div>
-                        {isMyPost && (
+                        {isMyPost &&
                             <span className='ml-auto'>
                                 {isDeleting ?
                                     <span className="loading loading-spinner loading-sm" />
@@ -127,18 +126,14 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                                     />
                                 }
                             </span>
-                        )}
+                        }
                     </div>
                     {/* Post contents */}
                     <div className='flex flex-col gap-3 overflow-hidden'>
                         <p className="text-lg">{post.text}</p>
-                        {post.image && (
-                            <img
-                                src={post.image}
-                                className='h-80 object-contain rounded'
-                                alt={post.text}
-                            />
-                        )}
+                        {post.image &&
+                            <img src={post.image} className='h-80 object-contain rounded' alt={post.text} />
+                        }
                     </div>
                     {/* Post controls */}
                     <div className='flex items-center'>
@@ -171,7 +166,7 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                         </div>
                     </div>
                 </div>
-            </div >
+            </div>
         </>
     );
 };

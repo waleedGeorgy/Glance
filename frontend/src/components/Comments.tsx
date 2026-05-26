@@ -37,9 +37,8 @@ const Comments = ({ post, feedTab }: { post: Post, feedTab: string }) => {
         onSuccess: (updatedComments: Comment[]) => {
             queryClient.setQueryData([feedTab], (oldData: Post[]) => {
                 return oldData.map((p) => {
-                    if (p._id === post._id) {
-                        return { ...p, comments: updatedComments }
-                    }
+                    if (p._id === post._id) return { ...p, comments: updatedComments }
+
                     return p;
                 });
             });
@@ -72,9 +71,8 @@ const Comments = ({ post, feedTab }: { post: Post, feedTab: string }) => {
             createToast("success", "Comment deleted!");
             queryClient.setQueryData([feedTab], (oldData: Post[]) => {
                 return oldData.map((p) => {
-                    if (p._id === post._id) {
-                        return { ...p, comments: updatedComments }
-                    }
+                    if (p._id === post._id) return { ...p, comments: updatedComments }
+
                     return p;
                 });
             });
@@ -102,11 +100,9 @@ const Comments = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                 <div className='modal-box rounded-lg border border-accent space-y-5'>
                     <h3 className='text-2xl text-right font-bold'>Comments</h3>
                     <div className='flex flex-col'>
-                        {post.comments.length === 0 && (
-                            <p className='font-light'>
-                                No comments yet. Say something 🤔
-                            </p>
-                        )}
+                        {post.comments.length === 0 &&
+                            <p className='font-light'>No comments yet. Say something 🤔</p>
+                        }
                         {post.comments.map((comment: Comment) => {
                             const isMyComment = authUser?._id === comment?.by._id;
                             const formattedDate = formatDate(comment.createdAt);

@@ -20,7 +20,7 @@ const queryClient = new QueryClient({
         }
       },
       refetchOnWindowFocus: false,
-      refetchOnReconnect: false
+      refetchOnReconnect: true
     }
   }
 });

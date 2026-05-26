@@ -24,7 +24,7 @@ const SignupPage = () => {
 
     const queryClient = useQueryClient();
 
-    const { mutate, isPending, isError, error } = useMutation({
+    const { mutate, isPending, isError, error, isSuccess } = useMutation({
         mutationFn: async ({ email, username, firstName, lastName, password }: formDataProps) => {
             try {
                 const res = await fetch("/api/auth/signup", {
@@ -135,7 +135,7 @@ const SignupPage = () => {
                         />
                     </label>
                     <button className='btn rounded-full btn-primary' disabled={isPending}>
-                        {isPending ?
+                        {isPending || isSuccess ?
                             <span>Signing up <span className="loading loading-dots loading-sm" /></span>
                             :
                             <span>Sign Up</span>
@@ -146,7 +146,7 @@ const SignupPage = () => {
                 <div className='flex flex-col gap-2 mt-6'>
                     <p className='text-center'>Already have an account?</p>
                     <Link viewTransition to='/login'>
-                        <button className='btn rounded-full btn-primary btn-outline w-full' disabled={isPending}>Log In</button>
+                        <button className='btn rounded-full btn-primary btn-outline w-full' disabled={isPending || isSuccess}>Log In</button>
                     </Link>
                 </div>
             </div>

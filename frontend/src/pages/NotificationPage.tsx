@@ -89,11 +89,11 @@ const NotificationPage = () => {
                         </ul>
                     </div>
                 </div>
-                {isLoadingNotifications && (
+                {isLoadingNotifications &&
                     <div className='flex justify-center h-full items-center'>
                         <span className="loading loading-ring loading-xl" />
                     </div>
-                )}
+                }
                 {notifications?.length === 0 && <div className='text-center p-4 font-bold'>No notifications 🤔</div>}
                 {notifications?.map((notification: Notification) => (
                     <div className='border-b border-accent' key={notification._id}>

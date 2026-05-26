@@ -9,6 +9,7 @@ export const createToast = (state: "error" | "success", contents: string) => {
         },
         duration: 4000,
     }
+
     switch (state) {
         case "error":
             return toast.error(contents, toastStyling);

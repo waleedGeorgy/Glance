@@ -18,7 +18,7 @@ const LoginPage = () => {
 
     const queryClient = useQueryClient();
 
-    const { mutate, error, isPending, isError } = useMutation({
+    const { mutate, error, isPending, isError, isSuccess } = useMutation({
         mutationFn: async ({ username, password }: formDataProps) => {
             try {
                 const res = await fetch("/api/auth/login", {
@@ -39,7 +39,7 @@ const LoginPage = () => {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["auth/getCurrentAuthUser"] });
-            createToast("success", "Logged in successfully! Redirecting...");
+            createToast("success", "Logged in successfully!");
         }
     });
 
@@ -90,8 +90,8 @@ const LoginPage = () => {
                             autoComplete="off"
                         />
                     </label>
-                    <button className='btn rounded-full btn-primary' disabled={isPending}>
-                        {isPending ?
+                    <button className='btn rounded-full btn-primary' disabled={isPending || isSuccess}>
+                        {isPending || isSuccess ?
                             <span>Logging in <span className="loading loading-dots loading-sm" /></span>
                             :
                             <span>Log In</span>
@@ -102,7 +102,7 @@ const LoginPage = () => {
                 <div className='flex flex-col gap-2'>
                     <p className='text-center'>Don't have an account?</p>
                     <Link viewTransition to='/signup'>
-                        <button className='btn rounded-full btn-primary btn-outline w-full' disabled={isPending}>Sign Up</button>
+                        <button className='btn rounded-full btn-primary btn-outline w-full' disabled={isPending || isSuccess}>Sign Up</button>
                     </Link>
                 </div>
             </div>

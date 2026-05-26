@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from "react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Image, Smile, X } from "lucide-react";
 import EmojiPicker, { Theme, EmojiStyle, type EmojiClickData } from 'emoji-picker-react';
-import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createToast } from "./Toast";
 
 const CreatePost = () => {
@@ -110,7 +110,7 @@ const CreatePost = () => {
           onChange={(e) => setText(e.target.value)}
           onClick={() => setShowEmojiPicker(false)}
         />
-        {image && (
+        {image &&
           <div className='relative mx-auto'>
             <X
               className='absolute top-2 right-2 bg-secondary rounded-full size-5 cursor-pointer hover:scale-110'
@@ -123,7 +123,7 @@ const CreatePost = () => {
             />
             <img src={image} className='w-full mx-auto h-72 object-contain rounded border border-accent' />
           </div>
-        )}
+        }
         <div className='flex justify-between py-2 px-4 border-t border-accent'>
           <div className='flex gap-2 items-center'>
             <Image
@@ -136,7 +136,7 @@ const CreatePost = () => {
                 className={`size-6 ${isCreatingPost ? ("text-neutral-600 hover:scale-100 pointer-events-none") : ("text-primary hover:scale-105 cursor-pointer")}`}
                 onClick={() => setShowEmojiPicker(!showEmojiPicker)}
               />
-              {showEmojiPicker && (
+              {showEmojiPicker &&
                 <div className="absolute top-full left-0 z-10" aria-disabled={isCreatingPost}>
                   <EmojiPicker
                     onEmojiClick={handleEmojiClick}
@@ -146,7 +146,7 @@ const CreatePost = () => {
                     emojiStyle={EmojiStyle.NATIVE}
                   />
                 </div>
-              )}
+              }
             </div>
           </div>
           <input type='file' accept="image/*" hidden ref={imgRef} onChange={handleImgChange} />
