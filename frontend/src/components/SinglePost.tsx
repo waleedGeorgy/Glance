@@ -105,11 +105,11 @@ const SinglePost = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                                 <Link viewTransition to={`/profile/${postOwner.username}`} className='hover:underline underline-offset-2 text-sm'>
                                     {postOwner.firstName} {postOwner.lastName}
                                 </Link>
-                                <span className="text-lg opacity-50">|</span>
+                                <span className="text-lg opacity-80">●</span>
                                 <Link className="hover:underline underline-offset-2 text-primary text-sm" viewTransition to={`/profile/${postOwner.username}`}>
                                     @{postOwner.username}
                                 </Link>
-                                <span className="text-lg opacity-50">|</span>
+                                <span className="text-lg opacity-80">●</span>
                                 <span className="flex text-sm flex-row gap-0.5 items-center"><Clock2 className="size-3.5" />
                                     {formattedDate}
                                 </span>

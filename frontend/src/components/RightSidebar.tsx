@@ -7,6 +7,8 @@ import useFollow from "../hooks/useFollow";
 const RightSidebar = () => {
     const { data: suggestedUsers, isLoading } = useQuery<User[]>({
         queryKey: ["users/suggested"],
+        staleTime: 30 * 1000,
+        gcTime: 3 * 60 * 1000
     });
 
     const { followUnfollow, isPending } = useFollow();

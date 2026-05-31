@@ -59,9 +59,9 @@ const LeftSidebar = () => {
                             to='/notifications'
                             className='flex gap-3 justify-center md:justify-start items-center hover:bg-accent transition-all rounded-full duration-300 py-3 px-2 cursor-pointer'
                         >
-                            <Bell className={`size-5 text-primary ${(notifications && notifications?.length > 0) && ("animate-wiggle")}`} />
+                            <Bell className={`size-5 text-primary ${notifications && notifications?.length > 0 && "animate-wiggle"}`} />
                             <span className='hidden md:block'>Notifications{" "}
-                                {(notifications && notifications.length > 0) && <span>({notifications?.length})</span>}
+                                {notifications && notifications.length > 0 && <span>({notifications?.length})</span>}
                             </span>
                         </Link>
                     </li>

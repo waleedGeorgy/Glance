@@ -42,15 +42,15 @@ const EditProfileModal = ({ authUser }: { authUser?: User }) => {
                 throw error;
             }
         },
-        onSuccess: (data) => {
+        onSuccess: (updatedUser: User) => {
             createToast("success", "Profile updated successfully");
-            if (data.username !== authUser?.username) {
-                navigate(`/profile/${data.username}`)
+            if (updatedUser.username !== authUser?.username) {
+                navigate(`/profile/${updatedUser.username}`)
             }
             Promise.all([
                 queryClient.invalidateQueries({ queryKey: ["auth/getCurrentAuthUser"] }),
                 queryClient.invalidateQueries({ queryKey: [`users/profile/${authUser?.username}`] }),
-                queryClient.invalidateQueries({ queryKey: [`users/profile/${data.username}`] })
+                queryClient.invalidateQueries({ queryKey: [`users/profile/${updatedUser.username}`] })
             ]);
         },
         onError: (error) => {

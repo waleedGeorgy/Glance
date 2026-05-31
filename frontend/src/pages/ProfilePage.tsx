@@ -32,7 +32,9 @@ const ProfilePage = () => {
     const { data: user, isLoading, refetch, isRefetching, error } = useQuery<User>({
         queryKey: [`users/profile/${username}`],
         enabled: !!username,
-        retry: 3
+        retry: 3,
+        staleTime: 60 * 1000,
+        gcTime: 3 * 60 * 1000
     });
 
     const { mutateAsync: updateProfileImages, isPending: isUpdatingProfileImages } = useMutation({
@@ -94,11 +96,9 @@ const ProfilePage = () => {
         <>
             <div className='flex-[4_4_0] border-r border-accent min-h-screen'>
                 {(isLoading || isRefetching) && <ProfileHeaderSkeleton />}
-                {!isLoading && !isRefetching && error &&
-                    <p className='text-center text-lg mt-4'>User not found ☹️</p>
-                }
+                {!isLoading && !isRefetching && error && <p className='text-center text-lg mt-4'>User not found ☹️</p>}
                 <div className='flex flex-col'>
-                    {!isLoading && !isRefetching && user && (
+                    {!isLoading && !isRefetching && user &&
                         <>
                             {/* Profile and cover images */}
                             <div className='relative'>
@@ -169,7 +169,7 @@ const ProfilePage = () => {
                                         {isPending && <span className="loading loading-spinner loading-sm" />}
                                     </button>
                                 }
-                                {(coverImage || profileImage) &&
+                                {coverImage || profileImage &&
                                     <button
                                         className='btn btn-primary rounded-full ml-2'
                                         onClick={async () => {
@@ -191,7 +191,14 @@ const ProfilePage = () => {
                             <div className='flex flex-col justify-center gap-2 mt-4 px-6'>
                                 <div className='flex flex-col gap-1 justify-center'>
                                     <span className='font-semibold text-3xl tracking-wide'>{user?.firstName} {user?.lastName}</span>
-                                    <span className='text-primary'>@{user?.username}</span>
+                                    <div className="flex items-center gap-3">
+                                        <span className='text-primary'>@{user?.username}</span>
+                                        <span>●</span>
+                                        <div className='flex gap-1 items-center'>
+                                            <Calendar1 className='size-3 opacity-70' />
+                                            <span className='opacity-75 font-light text-sm'>Joined {userJoinDate}</span>
+                                        </div>
+                                    </div>
                                     <span>{user?.bio}</span>
                                     <div className="flex flex-row gap-4 items-center">
                                         {user?.link && (
@@ -211,17 +218,13 @@ const ProfilePage = () => {
                                 </div>
                                 <div className='flex items-center gap-2 mt-1'>
                                     {/* TODO: implement showing followers and following users */}
-                                    <div className='flex gap-1 items-center bg-emerald-500 px-2 py-1 rounded-3xl text-secondary font-semibold text-sm'>
+                                    <div className='flex gap-1 items-center bg-emerald-500 px-2.5 py-1 rounded-3xl text-secondary text-sm'>
                                         <span>{user?.following.length}</span>
                                         <span>Following</span>
                                     </div>
-                                    <div className='flex gap-1 items-center bg-indigo-500 px-2 py-1 rounded-3xl text-secondary font-semibold text-sm'>
+                                    <div className='flex gap-1 items-center bg-indigo-500 px-2.5 py-1 rounded-3xl text-secondary text-sm'>
                                         <span>{user?.followers.length}</span>
                                         <span>Followers</span>
-                                    </div>
-                                    <div className='flex gap-1 items-center ml-1'>
-                                        <Calendar1 className='size-4 opacity-70' />
-                                        <span className='opacity-70 font-light'>Joined {userJoinDate}</span>
                                     </div>
                                 </div>
                             </div>
@@ -231,7 +234,7 @@ const ProfilePage = () => {
                                     className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 relative cursor-pointer truncate'
                                     onClick={() => setFeedTab("userPosts")}
                                 >
-                                    <span className="text-primary font-semibold mr-1">{`${user?.username}'s`}</span> Posts{" "}
+                                    Your Posts{" "}
                                     {isUserPostsLoading &&
                                         <span className="loading loading-ring loading-sm ml-0.5" />
                                     }
@@ -253,7 +256,7 @@ const ProfilePage = () => {
                                 </div>
                             </div>
                         </>
-                    )}
+                    }
                     <Posts feedTab={feedTab} username={username} userId={user?._id} />
                 </div>
             </div>

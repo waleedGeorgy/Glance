@@ -142,7 +142,6 @@ const Comments = ({ post, feedTab }: { post: Post, feedTab: string }) => {
                                                         <Clock2 className="size-3.5" />{formattedDate}
                                                     </span>
                                                 </div>
-
                                             </div>
                                             {isMyComment &&
                                                 <button

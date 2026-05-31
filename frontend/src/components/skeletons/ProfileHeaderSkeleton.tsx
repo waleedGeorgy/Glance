@@ -7,11 +7,14 @@ const ProfileHeaderSkeleton = () => {
                 </div>
                 <div className='skeleton h-8 mt-4 mr-3 w-20 ml-auto rounded-full'></div>
                 <div className='skeleton h-8 ml-5 w-48 rounded-full mt-4'></div>
-                <div className='skeleton h-4 ml-5 w-20 rounded-full'></div>
+                <div className="flex items-center gap-3">
+                    <div className='skeleton h-4 ml-5 w-20 rounded-full'></div>
+                    <span>●</span>
+                    <div className='skeleton h-4 w-20 rounded-full'></div>
+                </div>
                 <div className='skeleton h-4 ml-5 w-32 rounded-full'></div>
                 <div className='skeleton h-4 ml-5 w-48 rounded-full'></div>
                 <div className="flex flex-row items-center gap-2 ml-5">
-                    <div className='skeleton h-6 w-24 rounded-full'></div>
                     <div className='skeleton h-6 w-24 rounded-full'></div>
                     <div className='skeleton h-6 w-24 rounded-full'></div>
                 </div>

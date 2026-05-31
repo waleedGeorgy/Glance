@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import SinglePost from "./SinglePost";
 import PostsSkeleton from "./skeletons/PostsSkeleton";
@@ -23,21 +22,17 @@ const Posts = ({ feedTab, username, userId }:
 
   const postsEndpoint = getPostsEndpoint();
 
-  const { data: posts, isLoading, refetch, isRefetching } = useQuery<Post[]>({
-    queryKey: [postsEndpoint]
+  const { data: posts, isLoading } = useQuery<Post[]>({
+    queryKey: [postsEndpoint],
+    staleTime: 30000,
+    gcTime: 3 * 60 * 1000
   });
-
-  useEffect(() => {
-    refetch();
-  }, [feedTab, refetch, username, userId]);
 
   return (
     <>
-      {(isLoading || isRefetching) && <PostsSkeleton />}
-      {(!isLoading && !isRefetching) && posts?.length === 0 &&
-        <p className='text-center my-6 text-xl font-light'>No posts here 😒</p>
-      }
-      {(!isLoading && !isRefetching) && posts &&
+      {isLoading && <PostsSkeleton />}
+      {posts?.length === 0 && <p className='text-center my-6 text-xl font-light'>No posts here 😒</p>}
+      {!isLoading && posts &&
         posts.map((post: Post) =>
           <SinglePost key={post._id} post={post} feedTab={postsEndpoint} />
         )

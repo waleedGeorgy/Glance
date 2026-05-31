@@ -5,7 +5,7 @@ import Posts from "../components/Posts";
 const HomePage = () => {
   const [feedTab, setFeedTab] = useState<"forYou" | "following" | "userPosts" | "liked">("forYou");
   // todo: implement search functionality
-  
+
   return (
     <>
       <div className='flex-[4_4_0] mr-auto border-r border-accent min-h-screen pb-2'>
@@ -17,18 +17,18 @@ const HomePage = () => {
             onClick={() => setFeedTab("forYou")}
           >
             For You
-            {feedTab === "forYou" && (
+            {feedTab === "forYou" &&
               <div className='absolute bottom-0 w-12 h-1 rounded-full bg-primary'></div>
-            )}
+            }
           </div>
           <div
             className='flex justify-center flex-1 p-3 hover:bg-secondary transition duration-300 cursor-pointer relative'
             onClick={() => setFeedTab("following")}
           >
             Following
-            {feedTab === "following" && (
+            {feedTab === "following" &&
               <div className='absolute bottom-0 w-14 h-1 rounded-full bg-primary'></div>
-            )}
+            }
           </div>
         </div>
         <CreatePost />
